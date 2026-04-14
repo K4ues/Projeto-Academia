@@ -1,0 +1,285 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adicionar meu progresso</title>
+    <link rel="icon" href ="{% static 'icones-site/logo-h-pequena.png' %}">
+    <link rel="stylesheet" href="{% static 'css/usuario/adicionar_meu_progresso.css' %}">
+    <script src="{% static 'js/usuario/menu.js' %}"></script>
+    <script src="{% static 'js/usuario/notificacao.js' %}"></script>
+</head>
+<body>
+    <header>
+        <div class="seta-voltar">
+            <a href="javascript:history.back()">
+                <img src="{% static 'icones-site/seta-voltar.png' %}" alt="Ícone seta voltar">
+            </a>
+        </div>
+        <div class="logo-h">
+          <a href="{% url 'feed' %}"><img src="{% static 'icones-site/logo-h.png' %}" alt="Logo Habitus"></a>
+        </div>
+        <div class="menu-icon" onclick="toggleMenu()">
+          <img id="menu-icon" src="{% static 'icones-site/menu-lateral.png' %}" alt="Abrir Menu">
+        </div>
+    </header>
+      
+    {% if user.is_authenticated %}
+        {% if user.groups.first.name == "Aluno" %}
+            <!-- MENU PARA ALUNO -->
+            <nav id="menu-lateral" class="menu-lateral">
+                <div class="fechar">
+                    <h1>Menu</h1>
+                    <button class="fechar-menu" onclick="toggleMenu()">✕</button>
+                </div>
+                <ul>
+                    <div>
+                        <li><a href="{% url 'feed' %}"><img src="{% static 'icones-site/ultimas-noticias.png' %}" alt="">Últimas notícias</a></li>
+                        <li><a href="{% url 'notificacoes' %}"><img src="{% static 'icones-site/notificacoes.png' %}" alt="">Notificações</a></li>
+                        <li><a href="{% url 'historico' %}"><img src="{% static 'icones-site/historico.png' %}" alt="">Histórico</a></li>
+                        <li><a href="{% url 'solicitar_novo_treino' %}"><img src="{% static 'icones-site/solicitar-treino.png' %}" alt="">Solicitar novo treino</a></li>
+                    </div>
+                    <div>
+                        <li><a href="{% url 'configuracoes' %}"><img src="{% static 'icones-site/configuracoes.png' %}" alt="">Configurações</a></li>
+                        <!--<li><a href="{% url 'feed' %}"><img src="{% static 'icones-site/icone-avaliar.png' %}" alt="">Avaliar</a></li>-->
+                        <li><a href="{% url 'reportar_erro' %}"><img src="{% static 'icones-site/reportar-erro.png' %}" alt="">Reportar erro</a></li>
+                    </div>
+                    <div>
+                        <li><a href="{% url 'desenvolvedores' %}"><img src="{% static 'icones-site/desenvolvedores.png' %}" alt="">Desenvolvedores</a></li>
+                        <li><a href="{% url 'sobre_habitus' %}"><img src="{% static 'icones-site/sobre.png' %}" alt="">Sobre o Habitus</a></li>
+                    </div>
+                </ul>
+            </nav>
+
+        {% elif user.groups.first.name == "Professor" %}
+            <!-- MENU PARA PROFESSOR -->
+            <nav id="menu-lateral" class="menu-lateral">
+                <div class="fechar">
+                    <h1>Menu</h1>
+                    <button class="fechar-menu" onclick="toggleMenu()">✕</button>
+                </div>
+                <ul>
+                    <div>
+                        <li><a href="{% url 'feed' %}"><img src="{% static 'icones-site/ultimas-noticias.png' %}" alt="">Últimas notícias</a></li>
+                        <li><a href="{% url 'notificacoes' %}"><img src="{% static 'icones-site/notificacoes.png' %}" alt="">Notificações</a></li>
+                        <li><a href="{% url 'historico' %}"><img src="{% static 'icones-site/historico.png' %}" alt="">Histórico</a></li>
+                        <li><a href="{% url 'solicitar_novo_treino' %}"><img src="{% static 'icones-site/solicitar-treino.png' %}" alt="">Solicitar novo treino</a></li>
+                    </div>
+                    <div>
+                        <li><a href="{% url 'gerenciar_alunos' %}"><img src="{% static 'icones-site/icone-alunos.png' %}" alt="">Alunos</a></li>
+                        <li><a href="{% url 'gerenciar_noticias' %}"><img src="{% static 'icones-site/icone-noticias.png' %}" alt="">Notícias</a></li>
+                    </div>
+                    <div>
+                        <li><a href="{% url 'configuracoes' %}"><img src="{% static 'icones-site/configuracoes.png' %}" alt="">Configurações</a></li>
+                        <!--<li><a href="{% url 'feed' %}"><img src="{% static 'icones-site/icone-avaliar.png' %}" alt="">Avaliar</a></li>-->
+                        <li><a href="{% url 'reportar_erro' %}"><img src="{% static 'icones-site/reportar-erro.png' %}" alt="">Reportar erro</a></li>
+                    </div>
+                    <div>
+                        <li><a href="{% url 'desenvolvedores' %}"><img src="{% static 'icones-site/desenvolvedores.png' %}" alt="">Desenvolvedores</a></li>
+                        <li><a href="{% url 'sobre_habitus' %}"><img src="{% static 'icones-site/sobre.png' %}" alt="">Sobre o Habitus</a></li>
+                    </div>
+                </ul>
+            </nav>
+
+        {% elif user.groups.first.name == "Admin" %}
+            <!-- MENU PARA ADMIN -->
+            <nav id="menu-lateral" class="menu-lateral">
+                <div class="fechar">
+                    <h1>Menu</h1>
+                    <button class="fechar-menu" onclick="toggleMenu()">✕</button>
+                </div>
+                <ul>
+                    <div>
+                        <li><a href="{% url 'feed' %}"><img src="{% static 'icones-site/ultimas-noticias.png' %}" alt="">Últimas notícias</a></li>
+                        <li><a href="{% url 'notificacoes' %}"><img src="{% static 'icones-site/notificacoes.png' %}" alt="">Notificações</a></li>
+                        <li><a href="{% url 'historico' %}"><img src="{% static 'icones-site/historico.png' %}" alt="">Histórico</a></li>
+                        <li><a href="{% url 'solicitar_novo_treino' %}"><img src="{% static 'icones-site/solicitar-treino.png' %}" alt="">Solicitar novo treino</a></li>
+                    </div>
+                    <div>
+                        <li><a href="{% url 'gerenciar_alunos' %}"><img src="{% static 'icones-site/icone-alunos.png' %}" alt="">Alunos</a>
+                        <li><a href="{% url 'exercicios' %}"><img src="{% static 'icones-site/icone-exercicios.png' %}" alt="">Exercícios</a></li>
+                        <li><a href="{% url 'gerenciar_noticias' %}"><img src="{% static 'icones-site/icone-noticias.png' %}" alt="">Notícias</a></li>
+                        <li><a href="{% url 'professores' %}"><img src="{% static 'icones-site/icone-professores.png' %}" alt="">Professores</a></li>
+                    </div>
+                    <div>
+                        <li><a href="{% url 'configuracoes' %}"><img src="{% static 'icones-site/configuracoes.png' %}" alt="">Configurações</a></li>
+                        <!--<li><a href="{% url 'feed' %}"><img src="{% static 'icones-site/icone-avaliar.png' %}" alt="">Avaliações</a></li>-->
+                        <li><a href="{% url 'reportar_erro' %}"><img src="{% static 'icones-site/reportar-erro.png' %}" alt="">Reportar erro</a></li>
+                    </div>
+                    <div>
+                        <li><a href="{% url 'desenvolvedores' %}"><img src="{% static 'icones-site/desenvolvedores.png' %}" alt="">Desenvolvedores</a></li>
+                        <li><a href="{% url 'sobre_habitus' %}"><img src="{% static 'icones-site/sobre.png' %}" alt="">Sobre o Habitus</a></li>
+                    </div>
+                </ul>
+            </nav>
+        {% endif %}
+    {% endif %}
+
+    <main>
+        <section class="nome-pagina">
+            <h1>Adicionar meu progresso</h1>
+        </section>
+        <section class="container">
+            <form method="post" class="progresso-form">
+                {% csrf_token %}
+                
+                <!-- Dados de Avaliação Física -->
+                <section class="dados-av-fisica">
+                    <h3>Dados de avaliação física</h3>
+                    
+                    <div class="peso-altura-nivel">
+                        <div>
+                            <label for="{{ form.peso.id_for_label }}">Peso</label>
+                            {{ form.peso }}
+                        </div>
+                        <div>
+                            <label for="{{ form.altura.id_for_label }}">Altura</label>
+                            {{ form.altura }}
+                        </div>
+                        <div>
+                            <label for="{{ form.nivel.id_for_label }}">Nível</label>
+                            {{ form.nivel }}
+                        </div>
+                    </div>
+                    
+                    <div class="objetivo-entrada">
+                        <div>
+                            <label for="{{ form.objetivo.id_for_label }}">Objetivo</label>
+                            {{ form.objetivo }}
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Medições das Circunferências -->
+                <section class="medidas-circunferencia">
+                    <h3>Medições das circunferências</h3>
+                    
+                    <div class="c-a-t">
+                        <div>
+                            <label for="{{ form.cintura.id_for_label }}">Cintura</label>
+                            {{ form.cintura }}
+                        </div>
+                        <div>
+                            <label for="{{ form.abdomen.id_for_label }}">Abdômen</label>
+                            {{ form.abdomen }}
+                        </div>
+                        <div>
+                            <label for="{{ form.torax.id_for_label }}">Tórax</label>
+                            {{ form.torax }}
+                        </div>
+                    </div>
+                    
+                    <div class="quadril-coxas">
+                        <div>
+                            <label for="{{ form.quadril.id_for_label }}">Quadril</label>
+                            {{ form.quadril }}
+                        </div>
+                        <div>
+                            <label for="{{ form.coxa_direita.id_for_label }}">Coxa direita</label>
+                            {{ form.coxa_direita }}
+                        </div>
+                        <div>
+                            <label for="{{ form.coxa_esquerda.id_for_label }}">Coxa esquerda</label>
+                            {{ form.coxa_esquerda }}
+                        </div>
+                    </div>
+                    
+                    <div class="panturrilhas">
+                        <div>
+                            <label for="{{ form.panturrilha_direita.id_for_label }}">Panturrilha direita</label>
+                            {{ form.panturrilha_direita }}
+                        </div>
+                        <div>
+                            <label for="{{ form.panturrilha_esquerda.id_for_label }}">Panturrilha esquerda</label>
+                            {{ form.panturrilha_esquerda }}
+                        </div>
+                    </div>
+                    
+                    <div class="bracos">
+                        <div>
+                            <label for="{{ form.braco_direito.id_for_label }}">Braço direito</label>
+                            {{ form.braco_direito }}
+                        </div>
+                        <div>
+                            <label for="{{ form.braco_esquerdo.id_for_label }}">Braço esquerdo</label>
+                            {{ form.braco_esquerdo }}
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Medições das Dobras Cutâneas -->
+                <section class="medidas-dobra-cutanea">
+                    <h3>Medições das dobras cutâneas</h3>
+                    
+                    <div class="T-S-AM">
+                        <div>
+                            <label for="{{ form.tricipital.id_for_label }}">Tricipital</label>
+                            {{ form.tricipital }}
+                        </div>
+                        <div>
+                            <label for="{{ form.subescapular.id_for_label }}">Subescapular</label>
+                            {{ form.subescapular }}
+                        </div>
+                        <div>
+                            <label for="{{ form.axilar_media.id_for_label }}">Axilar média</label>
+                            {{ form.axilar_media }}
+                        </div>
+                    </div>
+                    
+                    <div class="S-A">
+                        <div>
+                            <label for="{{ form.suprailiaca.id_for_label }}">Suprailíaca</label>
+                            {{ form.suprailiaca }}
+                        </div>
+                        <div>
+                            <label for="{{ form.abdominal.id_for_label }}">Abdominal</label>
+                            {{ form.abdominal }}
+                        </div>
+                    </div>
+                    
+                    <div class="coxa-panturrilha">
+                        <div>
+                            <label for="{{ form.coxa.id_for_label }}">Coxa</label>
+                            {{ form.coxa }}
+                        </div>
+                        <div>
+                            <label for="{{ form.panturrilha.id_for_label }}">Panturrilha</label>
+                            {{ form.panturrilha }}
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Botões -->
+                <div class="form-buttons">
+                    <a href="javascript:history.back()" class="btn-cancelar">Cancelar</a>
+                    <button type="submit" class="btn-success">Salvar Progresso</button>
+                </div>
+            </form>
+        </section>
+        
+        <menu>
+            <div>
+            <a href="{% url 'feed' %}">
+                <img src="{% static 'icones-site/feed-icon-preta.png' %}" alt="Logo feed">
+                <h3>feed</h3>
+            </a>
+            </div>
+            <div>
+                <a href="{% url 'treinos' %}">
+                    <img src="{% static 'icones-site/treino-icon-preta.png' %}" alt="icone treino">
+                    <h3>Treinos</h3>
+                </a>
+            </div>
+            <div>
+                <a href="{% url 'perfil' %}">
+                    <img src="{% static 'icones-site/perfil-icon-preta.png' %}" alt="Logo perfil">
+                    <h3>Perfil</h3>
+                </a>
+            </div>
+    </main>
+    
+    </menu>
+</body>
+</html>

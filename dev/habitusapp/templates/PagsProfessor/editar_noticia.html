@@ -1,0 +1,263 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Notícia</title>
+    <link rel="icon" href="{% static 'icones-site/logo-h-pequena.png' %}">
+    <link rel="stylesheet" href="{% static 'css/professor/publicar_noticia.css' %}">
+    <script src="{% static 'js/usuario/menu.js' %}"></script>
+</head>
+<body>
+    <script>
+        // JavaScript para preview de imagem
+        function previewImage(input) {
+            const preview = document.getElementById('imagePreview');
+            const placeholder = document.querySelector('.upload-placeholder');
+            const overlay = document.querySelector('.upload-overlay');
+            
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                    if (placeholder) placeholder.style.display = 'none';
+                    if (overlay) overlay.style.display = 'flex';
+                }
+                
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // Confirmar exclusão
+        function confirmarExclusao() {
+            if (confirm('Tem certeza que deseja excluir esta notícia? Esta ação não pode ser desfeita.')) {
+                document.getElementById('form-exclusao').style.display = 'block';
+                document.querySelector('form').submit();
+            }
+        }
+
+        // Drag and drop functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const uploadBox = document.getElementById('imageUploadBox');
+            const fileInput = document.querySelector('.image-input-hidden');
+            
+            // Prevenir comportamento padrão do drag and drop
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                uploadBox.addEventListener(eventName, preventDefaults, false);
+                document.body.addEventListener(eventName, preventDefaults, false);
+            });
+            
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            
+            // Highlight drop area when item is dragged over it
+            ['dragenter', 'dragover'].forEach(eventName => {
+                uploadBox.addEventListener(eventName, highlight, false);
+            });
+            
+            ['dragleave', 'drop'].forEach(eventName => {
+                uploadBox.addEventListener(eventName, unhighlight, false);
+            });
+            
+            function highlight() {
+                uploadBox.classList.add('dragover');
+            }
+            
+            function unhighlight() {
+                uploadBox.classList.remove('dragover');
+            }
+            
+            // Handle dropped files
+            uploadBox.addEventListener('drop', handleDrop, false);
+            
+            function handleDrop(e) {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+                fileInput.files = files;
+                
+                // Trigger the change event manually
+                const event = new Event('change');
+                fileInput.dispatchEvent(event);
+            }
+        });
+    </script>
+    <header>
+        <div class="seta-voltar">
+            <a href="{% url 'gerenciar_noticias' %}">
+                <img src="{% static 'icones-site/seta-voltar.png' %}" alt="Ícone seta voltar">
+            </a>
+        </div>
+        <div class="logo-h">
+            <a href="{% url 'feed' %}"><img src="{% static 'icones-site/logo-h.png' %}" alt="Logo Habitus"></a>
+        </div>
+        <div class="menu-icon" onclick="toggleMenu()">
+            <img id="menu-icon" src="{% static 'icones-site/menu-lateral.png' %}" alt="Abrir Menu">
+        </div>
+    </header>
+    {% if user.is_authenticated %}
+        {% if user.groups.first.name == "Aluno" %}
+            <!-- MENU PARA ALUNO -->
+            <nav id="menu-lateral" class="menu-lateral">
+                <div class="fechar">
+                    <h1>Menu</h1>
+                    <button class="fechar-menu" onclick="toggleMenu()">✕</button>
+                </div>
+                <ul>
+                    <div>
+                        <li><a href="{% url 'feed' %}"><img src="{% static 'icones-site/ultimas-noticias.png' %}" alt="">Últimas notícias</a></li>
+                        <li><a href="{% url 'notificacoes' %}"><img src="{% static 'icones-site/notificacoes.png' %}" alt="">Notificações</a></li>
+                        <li><a href="{% url 'historico' %}"><img src="{% static 'icones-site/historico.png' %}" alt="">Histórico</a></li>
+                        <li><a href="{% url 'solicitar_novo_treino' %}"><img src="{% static 'icones-site/solicitar-treino.png' %}" alt="">Solicitar novo treino</a></li>
+                    </div>
+                    <div>
+                        <li><a href="{% url 'configuracoes' %}"><img src="{% static 'icones-site/configuracoes.png' %}" alt="">Configurações</a></li>
+                        <!--<li><a href="{% url 'feed' %}"><img src="{% static 'icones-site/icone-avaliar.png' %}" alt="">Avaliar</a></li>-->
+                        <li><a href="{% url 'reportar_erro' %}"><img src="{% static 'icones-site/reportar-erro.png' %}" alt="">Reportar erro</a></li>
+                    </div>
+                    <div>
+                        <li><a href="{% url 'desenvolvedores' %}"><img src="{% static 'icones-site/desenvolvedores.png' %}" alt="">Desenvolvedores</a></li>
+                        <li><a href="{% url 'sobre_habitus' %}"><img src="{% static 'icones-site/sobre.png' %}" alt="">Sobre o Habitus</a></li>
+                    </div>
+                </ul>
+            </nav>
+
+        {% elif user.groups.first.name == "Professor" %}
+            <!-- MENU PARA PROFESSOR -->
+            <nav id="menu-lateral" class="menu-lateral">
+                <div class="fechar">
+                    <h1>Menu</h1>
+                    <button class="fechar-menu" onclick="toggleMenu()">✕</button>
+                </div>
+                <ul>
+                    <div>
+                        <li><a href="{% url 'feed' %}"><img src="{% static 'icones-site/ultimas-noticias.png' %}" alt="">Últimas notícias</a></li>
+                        <li><a href="{% url 'notificacoes' %}"><img src="{% static 'icones-site/notificacoes.png' %}" alt="">Notificações</a></li>
+                        <li><a href="{% url 'historico' %}"><img src="{% static 'icones-site/historico.png' %}" alt="">Histórico</a></li>
+                        <li><a href="{% url 'solicitar_novo_treino' %}"><img src="{% static 'icones-site/solicitar-treino.png' %}" alt="">Solicitar novo treino</a></li>
+                    </div>
+                    <div>
+                        <li><a href="{% url 'gerenciar_alunos' %}"><img src="{% static 'icones-site/icone-alunos.png' %}" alt="">Alunos</a></li>
+                        <li><a href="{% url 'gerenciar_noticias' %}"><img src="{% static 'icones-site/icone-noticias.png' %}" alt="">Notícias</a></li>
+                    </div>
+                    <div>
+                        <li><a href="{% url 'configuracoes' %}"><img src="{% static 'icones-site/configuracoes.png' %}" alt="">Configurações</a></li>
+                        <!--<li><a href="{% url 'feed' %}"><img src="{% static 'icones-site/icone-avaliar.png' %}" alt="">Avaliar</a></li>-->
+                        <li><a href="{% url 'reportar_erro' %}"><img src="{% static 'icones-site/reportar-erro.png' %}" alt="">Reportar erro</a></li>
+                    </div>
+                    <div>
+                        <li><a href="{% url 'desenvolvedores' %}"><img src="{% static 'icones-site/desenvolvedores.png' %}" alt="">Desenvolvedores</a></li>
+                        <li><a href="{% url 'sobre_habitus' %}"><img src="{% static 'icones-site/sobre.png' %}" alt="">Sobre o Habitus</a></li>
+                    </div>
+                </ul>
+            </nav>
+
+        {% elif user.groups.first.name == "Admin" %}
+            <!-- MENU PARA ADMIN -->
+            <nav id="menu-lateral" class="menu-lateral">
+                <div class="fechar">
+                    <h1>Menu</h1>
+                    <button class="fechar-menu" onclick="toggleMenu()">✕</button>
+                </div>
+                <ul>
+                    <div>
+                        <li><a href="{% url 'feed' %}"><img src="{% static 'icones-site/ultimas-noticias.png' %}" alt="">Últimas notícias</a></li>
+                        <li><a href="{% url 'notificacoes' %}"><img src="{% static 'icones-site/notificacoes.png' %}" alt="">Notificações</a></li>
+                        <li><a href="{% url 'historico' %}"><img src="{% static 'icones-site/historico.png' %}" alt="">Histórico</a></li>
+                        <li><a href="{% url 'solicitar_novo_treino' %}"><img src="{% static 'icones-site/solicitar-treino.png' %}" alt="">Solicitar novo treino</a></li>
+                    </div>
+                    <div>
+                        <li><a href="{% url 'gerenciar_alunos' %}"><img src="{% static 'icones-site/icone-alunos.png' %}" alt="">Alunos</a>
+                        <li><a href="{% url 'exercicios' %}"><img src="{% static 'icones-site/icone-exercicios.png' %}" alt="">Exercícios</a></li>
+                        <li><a href="{% url 'gerenciar_noticias' %}"><img src="{% static 'icones-site/icone-noticias.png' %}" alt="">Notícias</a></li>
+                        <li><a href="{% url 'professores' %}"><img src="{% static 'icones-site/icone-professores.png' %}" alt="">Professores</a></li>
+                    </div>
+                    <div>
+                        <li><a href="{% url 'configuracoes' %}"><img src="{% static 'icones-site/configuracoes.png' %}" alt="">Configurações</a></li>
+                        <!--<li><a href="{% url 'feed' %}"><img src="{% static 'icones-site/icone-avaliar.png' %}" alt="">Avaliações</a></li>-->
+                        <li><a href="{% url 'reportar_erro' %}"><img src="{% static 'icones-site/reportar-erro.png' %}" alt="">Reportar erro</a></li>
+                    </div>
+                    <div>
+                        <li><a href="{% url 'desenvolvedores' %}"><img src="{% static 'icones-site/desenvolvedores.png' %}" alt="">Desenvolvedores</a></li>
+                        <li><a href="{% url 'sobre_habitus' %}"><img src="{% static 'icones-site/sobre.png' %}" alt="">Sobre o Habitus</a></li>
+                    </div>
+                </ul>
+            </nav>
+        {% endif %}
+    {% endif %}
+
+    <main>
+        <section class="nome-pagina">
+            <h1>Editar Notícia</h1>
+        </section>
+        
+        <section class="container">
+            <form method="post" enctype="multipart/form-data" class="form-publicar">
+                {% csrf_token %}
+
+                <div class="form-group">
+                    
+                    <div class="image-upload-container">
+                        <div class="image-upload-box" id="imageUploadBox">
+                            <input type="file" name="{{ form.imagem.name }}" id="{{ form.imagem.id_for_label }}" 
+                                   accept="image/*" class="image-input-hidden" onchange="previewImage(this)">
+                            {% if noticia.imagem %}
+                                <label for="{{ form.imagem.id_for_label }}" style="width:100%;height:100%;cursor:pointer;display:flex;align-items:center;justify-content:center;">
+                                    <img id="imagePreview" class="image-preview" src="{{ noticia.imagem.url }}" style="max-width:130px;max-height:130px;width:auto;height:auto;object-fit:contain;">
+                                    <div class="upload-overlay" style="position:absolute;top:0;left:0;width:100%;height:100%;display:none;align-items:center;justify-content:center;">
+                                        <img src="{% static 'icones-site/upload-icon.png' %}" alt="Alterar" class="upload-icon">
+                                        <p style="color:#fff;">Clique para alterar a imagem</p>
+                                    </div>
+                                </label>
+                            {% else %}
+                                <label for="{{ form.imagem.id_for_label }}" style="width:100%;height:100%;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-direction:column;">
+                                    <div class="upload-placeholder">
+                                        <p>Insira uma imagem</p>
+                                    </div>
+                                    <img id="imagePreview" class="image-preview" style="display: none;max-width:130px;max-height:130px;width:auto;height:auto;object-fit:contain;">
+                                </label>
+                            {% endif %}
+                        </div>
+                        {{ form.imagem.errors }}
+                    </div>
+                </div>
+                
+                <!-- Campo de categoria -->
+                <div class="form-group">
+                    <label for="{{ form.categoria.id_for_label }}">Categoria</label>
+                    {{ form.categoria }}
+                    {{ form.categoria.errors }}
+                </div>
+
+                <!-- Campo de descrição -->
+                <div class="form-group">
+                    <label for="{{ form.descricao.id_for_label }}">Descrição</label>
+                    {{ form.descricao }}
+                    {{ form.descricao.errors }}
+                </div>
+
+                <!-- Área de upload de imagem -->
+                
+
+                <!-- Botões -->
+                <div class="form-buttons">
+                    <a href="{% url 'gerenciar_noticias' %}" class="btn-cancelar">Cancelar</a>
+                    <button type="submit" class="btn-publicar">Salvar Alterações</button>
+                </div>
+
+                <!-- Formulário oculto para exclusão -->
+                <div id="form-exclusao" style="display: none;">
+                    <input type="hidden" name="excluir" value="true">
+                </div>
+            </form>
+        </section>
+    </main>
+
+    
+</body>
+</html>

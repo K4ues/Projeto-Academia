@@ -1,0 +1,375 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meu progresso</title>
+    <link rel="icon" href ="{% static 'icones-site/logo-h-pequena.png' %}">
+    <link rel="stylesheet" href="{% static 'css/usuario/meu_progresso.css' %}">
+    <link rel="stylesheet" href="{% static 'css/usuario/aviso.css' %}">
+    <script src="{% static 'js/usuario/menu.js' %}"></script>
+    <script src="{% static 'js/usuario/notificacao.js' %}"></script>
+    <script src="{% static 'js/usuario/aviso.js' %}"></script>
+</head>
+<body>
+    <header>
+        <div class="seta-voltar">
+            <a href="javascript:history.back()">
+                <img src="{% static 'icones-site/seta-voltar.png' %}" alt="Ícone seta voltar">
+            </a>
+        </div>
+        <div class="logo-h">
+          <a href="{% url 'feed' %}"><img src="{% static 'icones-site/logo-h.png' %}" alt="Logo Habitus"></a>
+        </div>
+        <div class="menu-icon" onclick="toggleMenu()">
+          <img id="menu-icon" src="{% static 'icones-site/menu-lateral.png' %}" alt="Abrir Menu">
+        </div>
+    </header>
+      
+    {% if user.is_authenticated %}
+        {% if user.groups.first.name == "Aluno" %}
+            <!-- MENU PARA ALUNO -->
+            <nav id="menu-lateral" class="menu-lateral">
+                <div class="fechar">
+                    <h1>Menu</h1>
+                    <button class="fechar-menu" onclick="toggleMenu()">✕</button>
+                </div>
+                <ul>
+                    <div>
+                        <li><a href="{% url 'feed' %}"><img src="{% static 'icones-site/ultimas-noticias.png' %}" alt="">Últimas notícias</a></li>
+                        <li><a href="{% url 'notificacoes' %}"><img src="{% static 'icones-site/notificacoes.png' %}" alt="">Notificações</a></li>
+                        <li><a href="{% url 'historico' %}"><img src="{% static 'icones-site/historico.png' %}" alt="">Histórico</a></li>
+                        <li><a href="{% url 'solicitar_novo_treino' %}"><img src="{% static 'icones-site/solicitar-treino.png' %}" alt="">Solicitar novo treino</a></li>
+                    </div>
+                    <div>
+                        <li><a href="{% url 'configuracoes' %}"><img src="{% static 'icones-site/configuracoes.png' %}" alt="">Configurações</a></li>
+                        <!--<li><a href="{% url 'feed' %}"><img src="{% static 'icones-site/icone-avaliar.png' %}" alt="">Avaliar</a></li>-->
+                        <li><a href="{% url 'reportar_erro' %}"><img src="{% static 'icones-site/reportar-erro.png' %}" alt="">Reportar erro</a></li>
+                    </div>
+                    <div>
+                        <li><a href="{% url 'desenvolvedores' %}"><img src="{% static 'icones-site/desenvolvedores.png' %}" alt="">Desenvolvedores</a></li>
+                        <li><a href="{% url 'sobre_habitus' %}"><img src="{% static 'icones-site/sobre.png' %}" alt="">Sobre o Habitus</a></li>
+                    </div>
+                </ul>
+            </nav>
+
+        {% elif user.groups.first.name == "Professor" %}
+            <!-- MENU PARA PROFESSOR -->
+            <nav id="menu-lateral" class="menu-lateral">
+                <div class="fechar">
+                    <h1>Menu</h1>
+                    <button class="fechar-menu" onclick="toggleMenu()">✕</button>
+                </div>
+                <ul>
+                    <div>
+                        <li><a href="{% url 'feed' %}"><img src="{% static 'icones-site/ultimas-noticias.png' %}" alt="">Últimas notícias</a></li>
+                        <li><a href="{% url 'notificacoes' %}"><img src="{% static 'icones-site/notificacoes.png' %}" alt="">Notificações</a></li>
+                        <li><a href="{% url 'historico' %}"><img src="{% static 'icones-site/historico.png' %}" alt="">Histórico</a></li>
+                        <li><a href="{% url 'solicitar_novo_treino' %}"><img src="{% static 'icones-site/solicitar-treino.png' %}" alt="">Solicitar novo treino</a></li>
+                    </div>
+                    <div>
+                        <li><a href="{% url 'gerenciar_alunos' %}"><img src="{% static 'icones-site/icone-alunos.png' %}" alt="">Alunos</a></li>
+                        <li><a href="{% url 'gerenciar_noticias' %}"><img src="{% static 'icones-site/icone-noticias.png' %}" alt="">Notícias</a></li>
+                    </div>
+                    <div>
+                        <li><a href="{% url 'configuracoes' %}"><img src="{% static 'icones-site/configuracoes.png' %}" alt="">Configurações</a></li>
+                        <!--<li><a href="{% url 'feed' %}"><img src="{% static 'icones-site/icone-avaliar.png' %}" alt="">Avaliar</a></li>-->
+                        <li><a href="{% url 'reportar_erro' %}"><img src="{% static 'icones-site/reportar-erro.png' %}" alt="">Reportar erro</a></li>
+                    </div>
+                    <div>
+                        <li><a href="{% url 'desenvolvedores' %}"><img src="{% static 'icones-site/desenvolvedores.png' %}" alt="">Desenvolvedores</a></li>
+                        <li><a href="{% url 'sobre_habitus' %}"><img src="{% static 'icones-site/sobre.png' %}" alt="">Sobre o Habitus</a></li>
+                    </div>
+                </ul>
+            </nav>
+
+        {% elif user.groups.first.name == "Admin" %}
+            <!-- MENU PARA ADMIN -->
+            <nav id="menu-lateral" class="menu-lateral">
+                <div class="fechar">
+                    <h1>Menu</h1>
+                    <button class="fechar-menu" onclick="toggleMenu()">✕</button>
+                </div>
+                <ul>
+                    <div>
+                        <li><a href="{% url 'feed' %}"><img src="{% static 'icones-site/ultimas-noticias.png' %}" alt="">Últimas notícias</a></li>
+                        <li><a href="{% url 'notificacoes' %}"><img src="{% static 'icones-site/notificacoes.png' %}" alt="">Notificações</a></li>
+                        <li><a href="{% url 'historico' %}"><img src="{% static 'icones-site/historico.png' %}" alt="">Histórico</a></li>
+                        <li><a href="{% url 'solicitar_novo_treino' %}"><img src="{% static 'icones-site/solicitar-treino.png' %}" alt="">Solicitar novo treino</a></li>
+                    </div>
+                    <div>
+                        <li><a href="{% url 'gerenciar_alunos' %}"><img src="{% static 'icones-site/icone-alunos.png' %}" alt="">Alunos</a>
+                        <li><a href="{% url 'exercicios' %}"><img src="{% static 'icones-site/icone-exercicios.png' %}" alt="">Exercícios</a></li>
+                        <li><a href="{% url 'gerenciar_noticias' %}"><img src="{% static 'icones-site/icone-noticias.png' %}" alt="">Notícias</a></li>
+                        <li><a href="{% url 'professores' %}"><img src="{% static 'icones-site/icone-professores.png' %}" alt="">Professores</a></li>
+                    </div>
+                    <div>
+                        <li><a href="{% url 'configuracoes' %}"><img src="{% static 'icones-site/configuracoes.png' %}" alt="">Configurações</a></li>
+                        <!--<li><a href="{% url 'feed' %}"><img src="{% static 'icones-site/icone-avaliar.png' %}" alt="">Avaliações</a></li>-->
+                        <li><a href="{% url 'reportar_erro' %}"><img src="{% static 'icones-site/reportar-erro.png' %}" alt="">Reportar erro</a></li>
+                    </div>
+                    <div>
+                        <li><a href="{% url 'desenvolvedores' %}"><img src="{% static 'icones-site/desenvolvedores.png' %}" alt="">Desenvolvedores</a></li>
+                        <li><a href="{% url 'sobre_habitus' %}"><img src="{% static 'icones-site/sobre.png' %}" alt="">Sobre o Habitus</a></li>
+                    </div>
+                </ul>
+            </nav>
+        {% endif %}
+    {% endif %}
+
+    <main>
+        <section class="nome-pagina">
+            <h1>Meu progresso</h1>
+        </section>
+        <section class="container">
+            <!--PARTE PARA AVISO, ISSO DEVE SER PADRÃO-->
+            {% if form.errors %}
+                <div class="alert alert-danger">
+                    {% for field, errors in form.errors.items %}
+                        {% for error in errors %}
+                            <p>{{ field|title }}: {{ error }}</p>
+                        {% endfor %}
+                    {% endfor %}
+                </div>
+            {% endif %}
+            
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+            <!--FIM DE AVISO AQUI!!-->
+            <section class="por_semana">
+                <h2>Última semana de treinos:</h2>
+                <div class="dias">
+                    {% for dia in dias_semana %}
+                        <div class="dia {% if dia.treinou %}treinou{% endif %}">
+                            <h3>{{ dia.nome }}</h3>
+                            <p>{{ dia.data }} </p>
+                        </div>
+                    {% endfor %}
+                </div>
+                <div class="treinos_finalizados">
+                    <h3>Aqui está seu resumo de treinos semanal!</h3>
+
+                    {% if treinos_por_dia %}
+                        {% for dia in treinos_por_dia %}
+                            {% for treino in dia.entries %}
+                                <div class="treino-card">
+                                    <div class="treino-info">
+                                        <h4>{{ treino.nome }}</h4>
+                                        <p>Dia {{ dia.date|date:"d/m/Y" }} </p>
+                                    </div>
+                                    <div class="treino-actions">
+                                        <span class="badge">Treinou {{ dia.count }} vez{% if dia.count > 1 %}es{% endif %}</span>
+                                        <a href="{% url 'treinos' %}" class="btn">Treinar novamente</a>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% endfor %}
+                    {% else %}
+                        <p>Você não finalizou treinos nesta semana. </p>
+                    {% endif %}
+                </div>
+            </section>
+            
+            <section class="progresso_atual">
+                <h2>Seu progresso atual:</h2>
+                <div class="progresso">
+                    <p>{{ concluidos }} / {{ total }} sessões </p>
+                </div>
+            </section>
+
+            <div class="secao-avaliacao">
+                
+                <!-- Filtro por data -->
+                <div class="filtro-data">
+                    <form method="get" class="filtro-form">
+                        <select name="data" id="data" onchange="this.form.submit()">
+                            <option value="">Progresso mais recente</option>
+                            {% for data in datas_disponiveis %}
+                                <option value="{{ data|date:'Y-m-d' }}" 
+                                        {% if data_selecionada == data|date:'Y-m-d' %}selected{% endif %}>
+                                    {{ data|date:"d/m/Y" }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </form>
+                </div>
+
+                <!-- Exibição do progresso -->
+                <div class="progresso-container">
+                    {% if progresso %}
+                        <!-- Informações da data -->
+                        <div class="info-data">
+                            <h3>Progresso registrado em: {{ progresso.data_entrada|date:"d/m/Y" }}</h3>
+                        </div>
+
+                        <section class="dados-av-fisica">
+                            <h3>Dados de avaliação física</h3>
+                            <div class="linha-dados">
+                                <div class="item-dado">
+                                    <p>Peso: </p>
+                                    <p>{% if progresso.peso %}{{ progresso.peso }} kg{% else %}-{% endif %}</p>
+                                </div>
+                                <div class="item-dado">
+                                    <p>Altura: </p>
+                                    <p>{% if progresso.altura %}{{ progresso.altura }} cm{% else %}-{% endif %}</p>
+                                </div>
+                                <div class="item-dado">
+                                    <p>Nível: </p>
+                                    <p>{% if progresso.nivel %}{{ progresso.get_nivel_display }}{% else %}-{% endif %}</p>
+                                </div>
+                            </div>
+                            <div class="linha-dados">
+                                <div class="item-dado">
+                                    <p>Objetivo: </p>
+                                    <p>{% if progresso.objetivo %}{{ progresso.get_objetivo_display }}{% else %}-{% endif %}</p>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section class="medidas-circunferencia">
+                            <h3>Medições das circunferências</h3>
+                            <div class="linha-dados">
+                                <div class="item-dado">
+                                    <p>Cintura: </p>
+                                    <p>{% if progresso.cintura %}{{ progresso.cintura }} cm{% else %}-{% endif %}</p>
+                                </div>
+                                <div class="item-dado">
+                                    <p>Abdômen: </p>
+                                    <p>{% if progresso.abdomen %}{{ progresso.abdomen }} cm{% else %}-{% endif %}</p>
+                                </div>
+                                <div class="item-dado">
+                                    <p>Tórax: </p>
+                                    <p>{% if progresso.torax %}{{ progresso.torax }} cm{% else %}-{% endif %}</p>
+                                </div>
+                            </div>
+                            <div class="linha-dados">
+                                <div class="item-dado">
+                                    <p>Quadril: </p>
+                                    <p>{% if progresso.quadril %}{{ progresso.quadril }} cm{% else %}-{% endif %}</p>
+                                </div>
+                                <div class="item-dado">
+                                    <p>Coxa direita: </p>
+                                    <p>{% if progresso.coxa_direita %}{{ progresso.coxa_direita }} cm{% else %}-{% endif %}</p>
+                                </div>
+                                <div class="item-dado">
+                                    <p>Coxa esquerda: </p>
+                                    <p>{% if progresso.coxa_esquerda %}{{ progresso.coxa_esquerda }} cm{% else %}-{% endif %}</p>
+                                </div>
+                            </div>
+                            <div class="linha-dados">
+                                <div class="item-dado">
+                                    <p>Panturrilha direita: </p>
+                                    <p>{% if progresso.panturrilha_direita %}{{ progresso.panturrilha_direita }} cm{% else %}-{% endif %}</p>
+                                </div>
+                                <div class="item-dado">
+                                    <p>Panturrilha esquerda: </p>
+                                    <p>{% if progresso.panturrilha_esquerda %}{{ progresso.panturrilha_esquerda }} cm{% else %}-{% endif %}</p>
+                                </div>
+                            </div>
+                            <div class="linha-dados">
+                                <div class="item-dado">
+                                    <p>Braço direito: </p>
+                                    <p>{% if progresso.braco_direito %}{{ progresso.braco_direito }} cm{% else %}-{% endif %}</p>
+                                </div>
+                                <div class="item-dado">
+                                    <p>Braço esquerdo: </p>
+                                    <p>{% if progresso.braco_esquerdo %}{{ progresso.braco_esquerdo }} cm{% else %}-{% endif %}</p>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section class="medidas-dobra-cutanea">
+                            <h3>Medições das dobras cutâneas</h3>
+                            <div class="linha-dados">
+                                <div class="item-dado">
+                                    <p>Tricipital: </p>
+                                    <p>{% if progresso.tricipital %}{{ progresso.tricipital }} mm{% else %}-{% endif %}</p>
+                                </div>
+                                <div class="item-dado">
+                                    <p>Subescapular: </p>
+                                    <p>{% if progresso.subescapular %}{{ progresso.subescapular }} mm{% else %}-{% endif %}</p>
+                                </div>
+                                <div class="item-dado">
+                                    <p>Axilar média: </p>
+                                    <p>{% if progresso.axilar_media %}{{ progresso.axilar_media }} mm{% else %}-{% endif %}</p>
+                                </div>
+                            </div>
+                            <div class="linha-dados">
+                                <div class="item-dado">
+                                    <p>Suprailíaca: </p>
+                                    <p>{% if progresso.suprailiaca %}{{ progresso.suprailiaca }} mm{% else %}-{% endif %}</p>
+                                </div>
+                                <div class="item-dado">
+                                    <p>Abdominal: </p>
+                                    <p>{% if progresso.abdominal %}{{ progresso.abdominal }} mm{% else %}-{% endif %}</p>
+                                </div>
+                            </div>
+                            <div class="linha-dados">
+                                <div class="item-dado">
+                                    <p>Coxa: </p>
+                                    <p>{% if progresso.coxa %}{{ progresso.coxa }} mm{% else %}-{% endif %}</p>
+                                </div>
+                                <div class="item-dado">
+                                    <p>Panturrilha: </p>
+                                    <p>{% if progresso.panturrilha %}{{ progresso.panturrilha }} mm{% else %}-{% endif %}</p>
+                                </div>
+                            </div>
+                        </section>
+                    {% else %}
+                        <div class="sem-progresso">
+                            <p>Nenhum progresso encontrado {% if data_selecionada %}para a data selecionada{% else %}para sua conta{% endif %}.</p>
+                            <p>Registre seu primeiro progresso para acompanhar sua evolução!</p>
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="form-buttons">
+                    <a href="{% url 'adicionar_meu_progresso' %}">
+                        <button class="btn btn-success">
+                             Adicionar novo progresso
+                        </button>
+                    </a>
+                    
+                    <!-- BOTÃO EDITAR PROGRESSO - APENAS SE HOUVER PROGRESSO -->
+                    {% if progresso %}
+                    <a href="{% url 'editar_meu_progresso' progresso_id=progresso.pk %}">
+                        <button class="btn btn-warning">
+                             Editar progresso atual
+                        </button>
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+
+        </section>
+        
+        <menu>
+            <div>
+            <a href="{% url 'feed' %}">
+                <img src="{% static 'icones-site/feed-icon-preta.png' %}" alt="Logo feed">
+                <h3>feed</h3>
+            </a>
+            </div>
+            <div>
+                <a href="{% url 'treinos' %}">
+                    <img src="{% static 'icones-site/treino-icon-preta.png' %}" alt="icone treino">
+                    <h3>Treinos</h3>
+                </a>
+            </div>
+            <div>
+                <a href="{% url 'perfil' %}">
+                    <img src="{% static 'icones-site/perfil-icon-preta.png' %}" alt="Logo perfil">
+                    <h3>Perfil</h3>
+                </a>
+            </div>
+    </main>
+    
+    </menu>
+</body>
+</html>

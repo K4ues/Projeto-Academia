@@ -1,0 +1,335 @@
+ {% load static %}
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exercícios</title>
+    <link rel="icon" href ="{% static 'icones-site/logo-h-pequena.png' %}">
+    <link rel="stylesheet" href="{% static 'css/admin/exercicios.css' %}">
+    <link rel="stylesheet" href="{% static 'css/usuario/aviso.css' %}">
+    <script src="{% static 'js/usuario/menu.js' %}"></script>
+    <script src="{% static 'js/usuario/aviso.js' %}"></script>
+</head>
+<body>
+    <script>
+        function toggleSubMenu(event, exercicioId) {
+            event.stopPropagation();
+            // Esconder todos os menus primeiro
+            document.querySelectorAll('.submenu').forEach(menu => {
+                menu.style.display = 'none';
+            });
+            // Mostrar o menu clicado
+            const menu = document.getElementById(`menu-${exercicioId}`);
+            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+        }
+
+        // Fechar menus quando clicar fora
+        document.addEventListener('click', function() {
+            document.querySelectorAll('.submenu').forEach(menu => {
+                menu.style.display = 'none';
+            });
+        });
+
+    function abrirModalVideo(videoUrl, nomeExercicio, grupoMuscular) {
+        const modal = document.getElementById('videoModal');
+        const modalVideo = document.getElementById('modalVideo');
+        const videoInfo = document.getElementById('modalVideoInfo');
+        
+        // Configurar o vídeo
+        modalVideo.src = videoUrl;
+        modalVideo.poster = ''; 
+        
+        
+        
+        
+        modal.style.display = 'block';
+        
+       
+        modalVideo.onloadeddata = function() {
+            modalVideo.play().catch(e => {
+                console.log('Reprodução automática bloqueada:', e);
+            });
+        };
+
+        
+        modalVideo.focus();
+    }
+
+
+    function fecharModal() {
+        const modal = document.getElementById('videoModal');
+        const modalVideo = document.getElementById('modalVideo');
+        
+        // Pausar o vídeo
+        modalVideo.pause();
+        modalVideo.currentTime = 0;
+        
+        // Esconder o modal
+        modal.style.display = 'none';
+    }
+
+    // Event listeners
+    document.addEventListener('DOMContentLoaded', function() {
+        const modal = document.getElementById('videoModal');
+        
+        
+        
+        modal.addEventListener('click', function(event) {
+            if (event.target === modal) {
+                fecharModal();
+            }
+        });
+        
+       
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                fecharModal();
+            }
+        });
+    });
+
+    </script>
+    <header>
+        <div class="seta-voltar">
+            <a href="javascript:history.back()">
+                <img src="{% static 'icones-site/seta-voltar.png' %}" alt="Ícone seta voltar">
+            </a>
+        </div>
+        <div class="logo-h">
+          <a href="{% url 'feed' %}"><img src="{% static 'icones-site/logo-h.png' %}" alt="Logo Habitus"></a>
+        </div>
+        <div class="menu-icon" onclick="toggleMenu()">
+          <img id="menu-icon" src="{% static 'icones-site/menu-lateral.png' %}" alt="Abrir Menu">
+        </div>
+    </header>
+      
+    {% if user.is_authenticated %}
+        {% if user.groups.first.name == "Aluno" %}
+            <!-- MENU PARA ALUNO -->
+            <nav id="menu-lateral" class="menu-lateral">
+                <div class="fechar">
+                    <h1>Menu</h1>
+                    <button class="fechar-menu" onclick="toggleMenu()">✕</button>
+                </div>
+                <ul>
+                    <div>
+                        <li><a href="{% url 'feed' %}"><img src="{% static 'icones-site/ultimas-noticias.png' %}" alt="">Últimas notícias</a></li>
+                        <li><a href="{% url 'notificacoes' %}"><img src="{% static 'icones-site/notificacoes.png' %}" alt="">Notificações</a></li>
+                        <li><a href="{% url 'historico' %}"><img src="{% static 'icones-site/historico.png' %}" alt="">Histórico</a></li>
+                        <li><a href="{% url 'solicitar_novo_treino' %}"><img src="{% static 'icones-site/solicitar-treino.png' %}" alt="">Solicitar novo treino</a></li>
+                    </div>
+                    <div>
+                        <li><a href="{% url 'configuracoes' %}"><img src="{% static 'icones-site/configuracoes.png' %}" alt="">Configurações</a></li>
+                        <!--<li><a href="{% url 'feed' %}"><img src="{% static 'icones-site/icone-avaliar.png' %}" alt="">Avaliar</a></li>-->
+                        <li><a href="{% url 'reportar_erro' %}"><img src="{% static 'icones-site/reportar-erro.png' %}" alt="">Reportar erro</a></li>
+                    </div>
+                    <div>
+                        <li><a href="{% url 'desenvolvedores' %}"><img src="{% static 'icones-site/desenvolvedores.png' %}" alt="">Desenvolvedores</a></li>
+                        <li><a href="{% url 'sobre_habitus' %}"><img src="{% static 'icones-site/sobre.png' %}" alt="">Sobre o Habitus</a></li>
+                    </div>
+                </ul>
+            </nav>
+
+        {% elif user.groups.first.name == "Professor" %}
+            <!-- MENU PARA PROFESSOR -->
+            <nav id="menu-lateral" class="menu-lateral">
+                <div class="fechar">
+                    <h1>Menu</h1>
+                    <button class="fechar-menu" onclick="toggleMenu()">✕</button>
+                </div>
+                <ul>
+                    <div>
+                        <li><a href="{% url 'feed' %}"><img src="{% static 'icones-site/ultimas-noticias.png' %}" alt="">Últimas notícias</a></li>
+                        <li><a href="{% url 'notificacoes' %}"><img src="{% static 'icones-site/notificacoes.png' %}" alt="">Notificações</a></li>
+                        <li><a href="{% url 'historico' %}"><img src="{% static 'icones-site/historico.png' %}" alt="">Histórico</a></li>
+                        <li><a href="{% url 'solicitar_novo_treino' %}"><img src="{% static 'icones-site/solicitar-treino.png' %}" alt="">Solicitar novo treino</a></li>
+                    </div>
+                    <div>
+                        <li><a href="{% url 'gerenciar_alunos' %}"><img src="{% static 'icones-site/icone-alunos.png' %}" alt="">Alunos</a></li>
+                        <li><a href="{% url 'gerenciar_noticias' %}"><img src="{% static 'icones-site/icone-noticias.png' %}" alt="">Notícias</a></li>
+                    </div>
+                    <div>
+                        <li><a href="{% url 'configuracoes' %}"><img src="{% static 'icones-site/configuracoes.png' %}" alt="">Configurações</a></li>
+                        <!--<li><a href="{% url 'feed' %}"><img src="{% static 'icones-site/icone-avaliar.png' %}" alt="">Avaliar</a></li>-->
+                        <li><a href="{% url 'reportar_erro' %}"><img src="{% static 'icones-site/reportar-erro.png' %}" alt="">Reportar erro</a></li>
+                    </div>
+                    <div>
+                        <li><a href="{% url 'desenvolvedores' %}"><img src="{% static 'icones-site/desenvolvedores.png' %}" alt="">Desenvolvedores</a></li>
+                        <li><a href="{% url 'sobre_habitus' %}"><img src="{% static 'icones-site/sobre.png' %}" alt="">Sobre o Habitus</a></li>
+                    </div>
+                </ul>
+            </nav>
+
+        {% elif user.groups.first.name == "Admin" %}
+            <!-- MENU PARA ADMIN -->
+            <nav id="menu-lateral" class="menu-lateral">
+                <div class="fechar">
+                    <h1>Menu</h1>
+                    <button class="fechar-menu" onclick="toggleMenu()">✕</button>
+                </div>
+                <ul>
+                    <div>
+                        <li><a href="{% url 'feed' %}"><img src="{% static 'icones-site/ultimas-noticias.png' %}" alt="">Últimas notícias</a></li>
+                        <li><a href="{% url 'notificacoes' %}"><img src="{% static 'icones-site/notificacoes.png' %}" alt="">Notificações</a></li>
+                        <li><a href="{% url 'historico' %}"><img src="{% static 'icones-site/historico.png' %}" alt="">Histórico</a></li>
+                        <li><a href="{% url 'solicitar_novo_treino' %}"><img src="{% static 'icones-site/solicitar-treino.png' %}" alt="">Solicitar novo treino</a></li>
+                    </div>
+                    <div>
+                        <li><a href="{% url 'gerenciar_alunos' %}"><img src="{% static 'icones-site/icone-alunos.png' %}" alt="">Alunos</a>
+                        <li><a href="{% url 'exercicios' %}"><img src="{% static 'icones-site/icone-exercicios.png' %}" alt="">Exercícios</a></li>
+                        <li><a href="{% url 'gerenciar_noticias' %}"><img src="{% static 'icones-site/icone-noticias.png' %}" alt="">Notícias</a></li>
+                        <li><a href="{% url 'professores' %}"><img src="{% static 'icones-site/icone-professores.png' %}" alt="">Professores</a></li>
+                    </div>
+                    <div>
+                        <li><a href="{% url 'configuracoes' %}"><img src="{% static 'icones-site/configuracoes.png' %}" alt="">Configurações</a></li>
+                        <!--<li><a href="{% url 'feed' %}"><img src="{% static 'icones-site/icone-avaliar.png' %}" alt="">Avaliações</a></li>-->
+                        <li><a href="{% url 'reportar_erro' %}"><img src="{% static 'icones-site/reportar-erro.png' %}" alt="">Reportar erro</a></li>
+                    </div>
+                    <div>
+                        <li><a href="{% url 'desenvolvedores' %}"><img src="{% static 'icones-site/desenvolvedores.png' %}" alt="">Desenvolvedores</a></li>
+                        <li><a href="{% url 'sobre_habitus' %}"><img src="{% static 'icones-site/sobre.png' %}" alt="">Sobre o Habitus</a></li>
+                    </div>
+                </ul>
+            </nav>
+        {% endif %}
+    {% endif %}
+    <main>
+    <section class="nome-pagina">
+        <h1>Gerenciar exercícios</h1>
+    </section>
+    <section class="container">
+        <!--PARTE PARA AVISO, ISSO DEVE SER PADRÃO-->
+        {% if form.errors %}
+            <div class="alert alert-danger">
+                {% for field, errors in form.errors.items %}
+                    {% for error in errors %}
+                        <p>{{ field|title }}: {{ error }}</p>
+                    {% endfor %}
+                {% endfor %}
+            </div>
+        {% endif %}
+        
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+        <!--FIM DE AVISO AQUI!!-->
+        <form method="get">
+            <div class="search-wrapper">
+                <input 
+                type="text" 
+                name="busca" 
+                placeholder="Localize o exercício pelo nome" 
+                value="{{ busca }}"
+                oninput="this.form.submit()"
+                />
+                <img src="{% static 'icones-site/lupa.png' %}" alt="Lupa">
+            </div>
+
+            <div>
+                <select name="grupo_muscular" onchange="this.form.submit()">
+                    <option value="">Filtre pelo grupo muscular</option>
+                    <option value="Peito" {% if grupo_muscular == "Peito" %}selected{% endif %}>Peito</option>
+                    <option value="Ombro" {% if grupo_muscular == "Ombro" %}selected{% endif %}>Ombro</option>
+                    <option value="Biceps" {% if grupo_muscular == "Biceps" %}selected{% endif %}>Bíceps</option>
+                    <option value="Dorsal" {% if grupo_muscular == "Dorsal" %}selected{% endif %}>Dorsal</option>
+                    <option value="Triceps" {% if grupo_muscular == "Triceps" %}selected{% endif %}>Tríceps</option>
+                    <option value="Quadriceps" {% if grupo_muscular == "Quadriceps" %}selected{% endif %}>Quadríceps</option>
+                    <option value="Glúteos" {% if grupo_muscular == "Glúteos" %}selected{% endif %}>Glúteos</option>
+                    <option value="Isquiotibiais" {% if grupo_muscular == "Isquiotibiais" %}selected{% endif %}>Isquiotibiais</option>
+                    <option value="Panturrilha" {% if grupo_muscular == "Panturrilha" %}selected{% endif %}>Panturrilha</option>
+                    <option value="Abdominais" {% if grupo_muscular == "Abdominais" %}selected{% endif %}>Abdominais</option>
+                </select>
+            </div>
+        </form>
+        <div class="container-button">
+            <a href="{% url 'novo_exercicio' %}" ><button class="novo_exercicio"><img src="{% static 'icones-site/novo-exercicio.png' %}">Novo exercício</button></a>
+        </div>
+
+        {% if not busca and not grupo_muscular %}
+            <div class="no-results-message">
+                <p>Digite um termo de pesquisa ou selecione um grupo muscular para visualizar os exercícios.</p>
+            </div>
+        {% elif exercicios.count == 0 %}
+            <div class="no-results-message">
+                <p>Nenhum exercício encontrado para os critérios de pesquisa.</p>
+            </div>
+        {% else %}
+        
+      
+
+            {% for exe in exercicios %}
+                <div class="exercicio">
+                    <div class="menu-container">
+                        <img src="{% static 'icones-site/bolinhas.png' %}" class="menu-button" alt="Opções" onclick="toggleSubMenu(event, {{ exe.id }})">
+                        <div id="menu-{{ exe.id }}" class="submenu">
+                            <a href="{% url 'editar_exercicio' exe.id %}" class="submenu-item"><img src="{% static 'icones-site/editar.png' %}">Editar</a>
+                            <form method="post" action="{% url 'excluir_exercicio' exe.id %}" class="delete-form">
+                                {% csrf_token %}
+                                <button type="submit" class="submenu-item delete-btn" onclick="return confirm('Tem certeza que deseja excluir este exercício?')"> <img src="{% static 'icones-site/excluir.png' %}">Excluir</button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="exercicio-imagem-container" {% if exe.video %}onclick="abrirModalVideo('{{ exe.video.url }}', '{{ exe.nome }}', '{{ exe.grupo_muscular }}')" style="cursor: {% if exe.video %}pointer{% else %}default{% endif %};"{% endif %}>
+                        {% if exe.imagem %}
+                            <img style="border-radius:10px; width: 85px; height: 85px; object-fit: cover;" 
+                                 src="{{ exe.imagem.url }}" 
+                                 alt="{{ exe.nome }}" 
+                                 class="imagem-exercicio {% if exe.video %}has-video{% endif %}">
+
+                        {% else %}
+                            <img src="{% static 'icones-site/sem-video.png' %}" alt="Exercício sem vídeo" class="sem-video {% if exe.video %}has-video{% endif %}">
+
+                        {% endif %}
+                    </div>
+                    <div>
+                        <p>{{ exe.nome }}</p>
+                        <div class="grupo-retangulo">
+                            {{ exe.grupo_muscular }}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        
+    </section>
+
+    <menu>
+        <div>
+            <a href="{% url 'feed' %}">
+                <img src="{% static 'icones-site/feed-icon-preta.png' %}" alt="Logo feed">
+                <h3>feed</h3>
+            </a>
+        </div>
+        <div>
+            <a href="{% url 'treinos' %}">
+                <img src="{% static 'icones-site/treino-icon-preta.png' %}" alt="icone treino">
+                <h3>Treinos</h3>
+            </a>
+        </div>
+        <div>
+            <a href="{% url 'perfil' %}">
+                <img src="{% static 'icones-site/perfil-icon-preta.png' %}" alt="Logo perfil">
+                <h3>Perfil</h3>
+            </a>
+        </div>
+    </main>
+    
+    </menu>
+    <div id="videoModal" class="modal">
+        <div class="modal-content">
+            
+            <video id="modalVideo" controls>
+                Seu navegador não suporta a tag de vídeo.
+            </video>
+            <div id="modalVideoInfo" class="video-info"></div>
+        </div>
+    </div>
+</body>
+</html>

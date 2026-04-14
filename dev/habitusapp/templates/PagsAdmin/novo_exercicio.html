@@ -1,0 +1,265 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Novo exercício</title>
+    <link rel="icon" href ="{% static 'icones-site/logo-h-pequena.png' %}">
+    <link rel="stylesheet" href="{% static 'css/admin/novo_exercicio.css' %}">
+    <script src="{% static 'js/usuario/menu.js' %}"></script>
+</head>
+<body>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Preview do vídeo
+        const videoInput = document.getElementById('id_video');
+        const videoPreview = document.getElementById('preview-video');
+        const videoPlaceholder = document.getElementById('video-placeholder');
+        const videoContainer = document.getElementById('video-container');
+
+        if(videoInput && videoContainer) {
+            videoContainer.addEventListener('click', function() {
+                videoInput.click();
+            });
+
+            videoInput.addEventListener('change', function(e) {
+                const [file] = videoInput.files;
+                if (file) {
+                    videoContainer.classList.add('has-video');
+                    const videoURL = URL.createObjectURL(file);
+                    videoPreview.src = videoURL;
+                    videoPreview.style.display = 'block';
+                    videoPlaceholder.style.display = 'none';
+                    videoPreview.onloadedmetadata = function() {
+                        videoPreview.play();
+                    };
+                }
+            });
+        }
+
+        // Preview da imagem
+        const imagemInput = document.getElementById('id_imagem');
+        const imagemPreview = document.getElementById('preview-imagem');
+        const imagemPlaceholder = document.getElementById('imagem-placeholder');
+        const imagemContainer = document.getElementById('imagem-container');
+
+        if(imagemInput && imagemContainer) {
+            imagemContainer.addEventListener('click', function() {
+                imagemInput.click();
+            });
+
+            imagemInput.addEventListener('change', function(e) {
+                const [file] = imagemInput.files;
+                if (file) {
+                    imagemContainer.classList.add('has-imagem');
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        imagemPreview.src = e.target.result;
+                        imagemPreview.style.display = 'block';
+                        imagemPlaceholder.style.display = 'none';
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+    });
+    </script>
+    <header>
+        <div class="seta-voltar">
+            <a href="javascript:history.back()">
+                <img src="{% static 'icones-site/seta-voltar.png' %}" alt="Ícone seta voltar">
+            </a>
+        </div>
+        <div class="logo-h">
+          <a href="{% url 'feed' %}"><img src="{% static 'icones-site/logo-h.png' %}" alt="Logo Habitus"></a>
+        </div>
+        <div class="menu-icon" onclick="toggleMenu()">
+          <img id="menu-icon" src="{% static 'icones-site/menu-lateral.png' %}" alt="Abrir Menu">
+        </div>
+    </header>
+      
+    {% if user.is_authenticated %}
+        {% if user.groups.first.name == "Aluno" %}
+            <!-- MENU PARA ALUNO -->
+            <nav id="menu-lateral" class="menu-lateral">
+                <div class="fechar">
+                    <h1>Menu</h1>
+                    <button class="fechar-menu" onclick="toggleMenu()">✕</button>
+                </div>
+                <ul>
+                    <div>
+                        <li><a href="{% url 'feed' %}"><img src="{% static 'icones-site/ultimas-noticias.png' %}" alt="">Últimas notícias</a></li>
+                        <li><a href="{% url 'notificacoes' %}"><img src="{% static 'icones-site/notificacoes.png' %}" alt="">Notificações</a></li>
+                        <li><a href="{% url 'historico' %}"><img src="{% static 'icones-site/historico.png' %}" alt="">Histórico</a></li>
+                        <li><a href="{% url 'solicitar_novo_treino' %}"><img src="{% static 'icones-site/solicitar-treino.png' %}" alt="">Solicitar novo treino</a></li>
+                    </div>
+                    <div>
+                        <li><a href="{% url 'configuracoes' %}"><img src="{% static 'icones-site/configuracoes.png' %}" alt="">Configurações</a></li>
+                        <!--<li><a href="{% url 'feed' %}"><img src="{% static 'icones-site/icone-avaliar.png' %}" alt="">Avaliar</a></li>-->
+                        <li><a href="{% url 'reportar_erro' %}"><img src="{% static 'icones-site/reportar-erro.png' %}" alt="">Reportar erro</a></li>
+                    </div>
+                    <div>
+                        <li><a href="{% url 'desenvolvedores' %}"><img src="{% static 'icones-site/desenvolvedores.png' %}" alt="">Desenvolvedores</a></li>
+                        <li><a href="{% url 'sobre_habitus' %}"><img src="{% static 'icones-site/sobre.png' %}" alt="">Sobre o Habitus</a></li>
+                    </div>
+                </ul>
+            </nav>
+
+        {% elif user.groups.first.name == "Professor" %}
+            <!-- MENU PARA PROFESSOR -->
+            <nav id="menu-lateral" class="menu-lateral">
+                <div class="fechar">
+                    <h1>Menu</h1>
+                    <button class="fechar-menu" onclick="toggleMenu()">✕</button>
+                </div>
+                <ul>
+                    <div>
+                        <li><a href="{% url 'feed' %}"><img src="{% static 'icones-site/ultimas-noticias.png' %}" alt="">Últimas notícias</a></li>
+                        <li><a href="{% url 'notificacoes' %}"><img src="{% static 'icones-site/notificacoes.png' %}" alt="">Notificações</a></li>
+                        <li><a href="{% url 'historico' %}"><img src="{% static 'icones-site/historico.png' %}" alt="">Histórico</a></li>
+                        <li><a href="{% url 'solicitar_novo_treino' %}"><img src="{% static 'icones-site/solicitar-treino.png' %}" alt="">Solicitar novo treino</a></li>
+                    </div>
+                    <div>
+                        <li><a href="{% url 'gerenciar_alunos' %}"><img src="{% static 'icones-site/icone-alunos.png' %}" alt="">Alunos</a></li>
+                        <li><a href="{% url 'gerenciar_noticias' %}"><img src="{% static 'icones-site/icone-noticias.png' %}" alt="">Notícias</a></li>
+                    </div>
+                    <div>
+                        <li><a href="{% url 'configuracoes' %}"><img src="{% static 'icones-site/configuracoes.png' %}" alt="">Configurações</a></li>
+                        <!--<li><a href="{% url 'feed' %}"><img src="{% static 'icones-site/icone-avaliar.png' %}" alt="">Avaliar</a></li>-->
+                        <li><a href="{% url 'reportar_erro' %}"><img src="{% static 'icones-site/reportar-erro.png' %}" alt="">Reportar erro</a></li>
+                    </div>
+                    <div>
+                        <li><a href="{% url 'desenvolvedores' %}"><img src="{% static 'icones-site/desenvolvedores.png' %}" alt="">Desenvolvedores</a></li>
+                        <li><a href="{% url 'sobre_habitus' %}"><img src="{% static 'icones-site/sobre.png' %}" alt="">Sobre o Habitus</a></li>
+                    </div>
+                </ul>
+            </nav>
+
+        {% elif user.groups.first.name == "Admin" %}
+            <!-- MENU PARA ADMIN -->
+            <nav id="menu-lateral" class="menu-lateral">
+                <div class="fechar">
+                    <h1>Menu</h1>
+                    <button class="fechar-menu" onclick="toggleMenu()">✕</button>
+                </div>
+                <ul>
+                    <div>
+                        <li><a href="{% url 'feed' %}"><img src="{% static 'icones-site/ultimas-noticias.png' %}" alt="">Últimas notícias</a></li>
+                        <li><a href="{% url 'notificacoes' %}"><img src="{% static 'icones-site/notificacoes.png' %}" alt="">Notificações</a></li>
+                        <li><a href="{% url 'historico' %}"><img src="{% static 'icones-site/historico.png' %}" alt="">Histórico</a></li>
+                        <li><a href="{% url 'solicitar_novo_treino' %}"><img src="{% static 'icones-site/solicitar-treino.png' %}" alt="">Solicitar novo treino</a></li>
+                    </div>
+                    <div>
+                        <li><a href="{% url 'gerenciar_alunos' %}"><img src="{% static 'icones-site/icone-alunos.png' %}" alt="">Alunos</a>
+                        <li><a href="{% url 'exercicios' %}"><img src="{% static 'icones-site/icone-exercicios.png' %}" alt="">Exercícios</a></li>
+                        <li><a href="{% url 'gerenciar_noticias' %}"><img src="{% static 'icones-site/icone-noticias.png' %}" alt="">Notícias</a></li>
+                        <li><a href="{% url 'professores' %}"><img src="{% static 'icones-site/icone-professores.png' %}" alt="">Professores</a></li>
+                    </div>
+                    <div>
+                        <li><a href="{% url 'configuracoes' %}"><img src="{% static 'icones-site/configuracoes.png' %}" alt="">Configurações</a></li>
+                        <!--<li><a href="{% url 'feed' %}"><img src="{% static 'icones-site/icone-avaliar.png' %}" alt="">Avaliações</a></li>-->
+                        <li><a href="{% url 'reportar_erro' %}"><img src="{% static 'icones-site/reportar-erro.png' %}" alt="">Reportar erro</a></li>
+                    </div>
+                    <div>
+                        <li><a href="{% url 'desenvolvedores' %}"><img src="{% static 'icones-site/desenvolvedores.png' %}" alt="">Desenvolvedores</a></li>
+                        <li><a href="{% url 'sobre_habitus' %}"><img src="{% static 'icones-site/sobre.png' %}" alt="">Sobre o Habitus</a></li>
+                    </div>
+                </ul>
+            </nav>
+        {% endif %}
+    {% endif %}
+    <main>
+        <section class="nome-pagina">
+            <h1>Novo exercício</h1>
+        </section>
+        <section class="container">
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+            
+                <!-- Linha com vídeo e imagem lado a lado -->
+                <div class="upload-row">
+                    <!-- Área de upload de vídeo -->
+                    <div class="video-upload-container">
+                        <label for="id_video" class="video-label">
+                            <div id="video-container" class="video-container">
+                                <video id="preview-video" class="video-preview" controls style="display: none;">
+                                    Seu navegador não suporta a tag de vídeo.
+                                </video>
+                                <div id="video-placeholder" class="video-placeholder">
+                                    <img src="{% static 'icones-site/icon-insira-video.png' %}" alt="Adicionar vídeo">
+                                    <p>Clique para adicionar um vídeo</p>
+                                </div>
+                                {{ form.video }}
+                            </div>
+                        </label>
+                    </div>
+
+                    <!-- Área de upload de imagem -->
+                    <div class="imagem-upload-container">
+                        <label for="id_imagem" class="imagem-label">
+                            <div id="imagem-container" class="imagem-container">
+                                <img id="preview-imagem" class="imagem-preview" style="display: none;" alt="Pré-visualização da imagem">
+                                <div id="imagem-placeholder" class="imagem-placeholder">
+                                    <img src="{% static 'icones-site/icon-insira-imagem.png' %}" alt="Adicionar imagem">
+                                    <p>Clique para adicionar uma imagem</p>
+                                </div>
+                                {{ form.imagem }}
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="info">
+                    <label for="{{ form.nome.id_for_label }}">Nome do exercício</label>
+                    {{ form.nome }}
+                </div>
+
+                <div class="linha">
+                    <div class="info">
+                        <label for="{{ form.grupo_muscular.id_for_label }}">Grupo muscular:</label>
+                        {{ form.grupo_muscular }}
+                    </div>
+                    <div class="info">
+                        <label for="{{ form.dificuldade.id_for_label }}">Nível:</label>
+                        {{ form.dificuldade }}
+                    </div>
+                </div>
+            
+                <div class="info">
+                    <label for="{{ form.descricao.id_for_label }}">Descrição:</label>
+                    {{ form.descricao }}
+                </div>
+            
+                <div class="botoes">
+                    <a href="{% url 'exercicios' %}"><button type="button" class="cancel">Cancelar</button></a>
+                    <button type="submit" class="save">Adicionar</button>
+                </div>
+            </form>
+        </section>
+
+    <menu>
+        <div>
+            <a href="{% url 'feed' %}">
+                <img src="{% static 'icones-site/feed-icon-preta.png' %}" alt="Logo feed">
+                <h3>feed</h3>
+            </a>
+        </div>
+        <div>
+            <a href="{% url 'treinos' %}">
+                <img src="{% static 'icones-site/treino-icon-preta.png' %}" alt="icone treino">
+                <h3>Treinos</h3>
+            </a>
+        </div>
+        <div>
+            <a href="{% url 'perfil' %}">
+                <img src="{% static 'icones-site/perfil-icon-preta.png' %}" alt="Logo perfil">
+                <h3>Perfil</h3>
+            </a>
+        </div>
+    </main>
+    
+    </menu>
+</body>
+</html>

@@ -1,0 +1,228 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfil</title>
+    <link rel="icon" href ="{% static 'icones-site/logo-h-pequena.png' %}">
+    <link rel="stylesheet" href="{% static 'css/usuario/perfil.css' %}">
+    <script src="{% static 'js/usuario/menu.js' %}"></script>
+    <script src="{% static 'js/usuario/perfil.js' %}"></script>
+</head>
+<body>
+    <header>
+        <div class="seta-voltar">
+            <a href="{% url 'notificacoes' %}">
+                {% if tem_notificacao %}
+                    <img src="{% static 'icones-site/icone-com-notificacao.png' %}" alt="Notificação">
+                {% else %}
+                    <img src="{% static 'icones-site/icone-sem-notificacao.png' %}" alt="Sem notificação">
+                {% endif %}
+            </a>
+        </div>
+        <div class="logo-h">
+          <a href="{% url 'feed' %}"><img src="{% static 'icones-site/logo-h.png' %}" alt="Logo Habitus"></a>
+        </div>
+        <div class="menu-icon" onclick="toggleMenu()">
+          <img id="menu-icon" src="{% static 'icones-site/menu-lateral.png' %}" alt="Abrir Menu">
+        </div>
+    </header>
+      
+{% if user.is_authenticated %}
+        {% if user.groups.first.name == "Aluno" %}
+            <!-- MENU PARA ALUNO -->
+            <nav id="menu-lateral" class="menu-lateral">
+                <div class="fechar">
+                    <h1>Menu</h1>
+                    <button class="fechar-menu" onclick="toggleMenu()">✕</button>
+                </div>
+                <ul>
+                    <div>
+                        <li><a href="{% url 'feed' %}"><img src="{% static 'icones-site/ultimas-noticias.png' %}" alt="">Últimas notícias</a></li>
+                        <li><a href="{% url 'notificacoes' %}"><img src="{% static 'icones-site/notificacoes.png' %}" alt="">Notificações</a></li>
+                        <li><a href="{% url 'historico' %}"><img src="{% static 'icones-site/historico.png' %}" alt="">Histórico</a></li>
+                        <li><a href="{% url 'solicitar_novo_treino' %}"><img src="{% static 'icones-site/solicitar-treino.png' %}" alt="">Solicitar novo treino</a></li>
+                    </div>
+                    <div>
+                        <li><a href="{% url 'configuracoes' %}"><img src="{% static 'icones-site/configuracoes.png' %}" alt="">Configurações</a></li>
+                        <!--<li><a href="{% url 'feed' %}"><img src="{% static 'icones-site/icone-avaliar.png' %}" alt="">Avaliar</a></li>-->
+                        <li><a href="{% url 'reportar_erro' %}"><img src="{% static 'icones-site/reportar-erro.png' %}" alt="">Reportar erro</a></li>
+                    </div>
+                    <div>
+                        <li><a href="{% url 'desenvolvedores' %}"><img src="{% static 'icones-site/desenvolvedores.png' %}" alt="">Desenvolvedores</a></li>
+                        <li><a href="{% url 'sobre_habitus' %}"><img src="{% static 'icones-site/sobre.png' %}" alt="">Sobre o Habitus</a></li>
+                    </div>
+                </ul>
+            </nav>
+
+        {% elif user.groups.first.name == "Professor" %}
+            <!-- MENU PARA PROFESSOR -->
+            <nav id="menu-lateral" class="menu-lateral">
+                <div class="fechar">
+                    <h1>Menu</h1>
+                    <button class="fechar-menu" onclick="toggleMenu()">✕</button>
+                </div>
+                <ul>
+                    <div>
+                        <li><a href="{% url 'feed' %}"><img src="{% static 'icones-site/ultimas-noticias.png' %}" alt="">Últimas notícias</a></li>
+                        <li><a href="{% url 'notificacoes' %}"><img src="{% static 'icones-site/notificacoes.png' %}" alt="">Notificações</a></li>
+                        <li><a href="{% url 'historico' %}"><img src="{% static 'icones-site/historico.png' %}" alt="">Histórico</a></li>
+                        <li><a href="{% url 'solicitar_novo_treino' %}"><img src="{% static 'icones-site/solicitar-treino.png' %}" alt="">Solicitar novo treino</a></li>
+                    </div>
+                    <div>
+
+                        <li><a href="{% url 'gerenciar_alunos' %}"><img src="{% static 'icones-site/icone-alunos.png' %}" alt="">Alunos</a></li>
+                        <li><a href="{% url 'gerenciar_noticias' %}"><img src="{% static 'icones-site/icone-noticias.png' %}" alt="">Notícias</a></li>
+                    </div>
+                    <div>
+                        <li><a href="{% url 'configuracoes' %}"><img src="{% static 'icones-site/configuracoes.png' %}" alt="">Configurações</a></li>
+                        <!--<li><a href="{% url 'feed' %}"><img src="{% static 'icones-site/icone-avaliar.png' %}" alt="">Avaliar</a></li>-->
+                        <li><a href="{% url 'reportar_erro' %}"><img src="{% static 'icones-site/reportar-erro.png' %}" alt="">Reportar erro</a></li>
+                    </div>
+                    <div>
+                        <li><a href="{% url 'desenvolvedores' %}"><img src="{% static 'icones-site/desenvolvedores.png' %}" alt="">Desenvolvedores</a></li>
+                        <li><a href="{% url 'sobre_habitus' %}"><img src="{% static 'icones-site/sobre.png' %}" alt="">Sobre o Habitus</a></li>
+                    </div>
+                </ul>
+            </nav>
+
+        {% elif user.groups.first.name == "Admin" %}
+            <!-- MENU PARA ADMIN -->
+            <nav id="menu-lateral" class="menu-lateral">
+                <div class="fechar">
+                    <h1>Menu</h1>
+                    <button class="fechar-menu" onclick="toggleMenu()">✕</button>
+                </div>
+                <ul>
+                    <div>
+                        <li><a href="{% url 'feed' %}"><img src="{% static 'icones-site/ultimas-noticias.png' %}" alt="">Últimas notícias</a></li>
+                        <li><a href="{% url 'notificacoes' %}"><img src="{% static 'icones-site/notificacoes.png' %}" alt="">Notificações</a></li>
+                        <li><a href="{% url 'historico' %}"><img src="{% static 'icones-site/historico.png' %}" alt="">Histórico</a></li>
+                        <li><a href="{% url 'solicitar_novo_treino' %}"><img src="{% static 'icones-site/solicitar-treino.png' %}" alt="">Solicitar novo treino</a></li>
+                    </div>
+                    <div>
+                        <li><a href="{% url 'gerenciar_alunos' %}"><img src="{% static 'icones-site/icone-alunos.png' %}" alt="">Alunos</a>
+                        <li><a href="{% url 'exercicios' %}"><img src="{% static 'icones-site/icone-exercicios.png' %}" alt="">Exercícios</a></li>
+                        <li><a href="{% url 'gerenciar_noticias' %}"><img src="{% static 'icones-site/icone-noticias.png' %}" alt="">Notícias</a></li>
+                        <li><a href="{% url 'professores' %}"><img src="{% static 'icones-site/icone-professores.png' %}" alt="">Professores</a></li>
+                    </div>
+                    <div>
+                        <li><a href="{% url 'configuracoes' %}"><img src="{% static 'icones-site/configuracoes.png' %}" alt="">Configurações</a></li>
+                        <!--<li><a href="{% url 'feed' %}"><img src="{% static 'icones-site/icone-avaliar.png' %}" alt="">Avaliações</a></li>-->
+                        <li><a href="{% url 'reportar_erro' %}"><img src="{% static 'icones-site/reportar-erro.png' %}" alt="">Reportar erro</a></li>
+                    </div>
+                    <div>
+                        <li><a href="{% url 'desenvolvedores' %}"><img src="{% static 'icones-site/desenvolvedores.png' %}" alt="">Desenvolvedores</a></li>
+                        <li><a href="{% url 'sobre_habitus' %}"><img src="{% static 'icones-site/sobre.png' %}" alt="">Sobre o Habitus</a></li>
+                    </div>
+                </ul>
+            </nav>
+        {% endif %}
+    {% endif %}
+    <main>
+    <section class="nome-pagina">
+        <h1>Perfil</h1>
+    </section>
+        <section class="container">
+            <div class="editar-foto">
+                <!-- Ao clicar na foto, abre o input de upload -->
+                <a href="#" onclick="document.getElementById('id_nova_foto').click(); return false;" class="foto-perfil-wrapper">
+                    {% if perfil.foto_perfil %}
+                        <img id="preview-foto"
+                            src="{{ perfil.foto_perfil.url }}"
+                            data-original="{{ perfil.foto_perfil.url }}"
+                            data-padrao="{% static 'icones-site/sem-foto.png' %}"
+                            alt="Foto de Perfil"
+                            class="foto-perfil">
+                    {% else %}
+                        <img id="preview-foto"
+                            src="{% static 'icones-site/sem-foto.png' %}"
+                            data-original=""
+                            data-padrao="{% static 'icones-site/sem-foto.png' %}"
+                            alt="Foto de Perfil Padrão"
+                            class="foto-perfil">
+                    {% endif %}
+                    <img src="{% static 'icones-site/editar-foto-perfil.png' %}" alt="Ícone editar" class="icone-editar">
+                </a>
+
+
+                <h2>{{ perfil.nome }}</h2>
+                <p>{% if perfil.matricula %}{{ perfil.matricula }}{% else %}Sem matrícula{% endif %}</p>
+
+                <!-- Input oculto para escolher nova foto -->
+                <form method="POST" enctype="multipart/form-data" action="{% url 'editar_foto' %}">
+                    {% csrf_token %}
+                    
+                    <!-- Input de nova foto -->
+                    <input type="file" name="nova_foto" id="id_nova_foto" accept="image/*" style="display:none;" onchange="previewNovaFoto()">
+
+                    <!-- Botões de ação -->
+                    <div class="botoes">
+                        <button type="button" id="remover-foto-btn" onclick="removerNovaFoto()" style="display:none;">Cancelar</button>
+                        <button type="submit" id="salvar-foto-btn" style="display:none;">Salvar</button>
+                    </div>
+
+                    <!-- Botão de usar foto padrão -->
+                    <button type="submit" id="foto-padrao" style="display:none;" name="usar_foto_padrao" class="btn-padrao">
+                        Usar foto padrão
+                    </button>
+                </form>
+            </div>
+
+            <div class="acoes-perfil">
+                <a href="{% url 'meus_dados' %}">
+                    <img src="{% static 'icones-site/dados-icone.png' %}" alt="Icone dados">
+                    <span>Meus dados</span>
+                </a>
+                <a href="{% url 'meu_progresso' %}">
+                    <img src="{% static 'icones-site/progresso-icone.png' %}" alt="Icone progresso">
+                    <span>Meu progresso</span>
+                </a>
+                <a href="{% url 'solicitar_novo_treino' %}">
+                    <img src="{% static 'icones-site/novo-treino-icone.png' %}" alt="Icone de Novo Treino">
+                    <span>Solicitar novo treino</span>
+                </a>
+            </div>
+            <div class="acoes-perfil">
+                <a href="{% url 'configuracoes' %}">
+                    <img src="{% static 'icones-site/icon-confi.png' %}" alt="Icone de Configuração">
+                    <span>Configurações</span>
+                </a>
+            </div>
+            <form id="logout-form" action="{% url 'logout' %}" method="post" style="display: none;">
+                {% csrf_token %}
+            </form>
+
+            <a class="sair_perfil" href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                Sair
+                <img src="{% static 'icones-site/sair_conta.png' %}" alt="icone sair da conta">
+            </a>
+
+        </section>
+
+    <menu>
+        <div>
+            <a href="{% url 'feed' %}">
+                <img src="{% static 'icones-site/feed-icon-preta.png' %}" alt="Logo feed">
+                <h3>feed</h3>
+            </a>
+        </div>
+        <div>
+            <a href="{% url 'treinos' %}">
+                <img src="{% static 'icones-site/treino-icon-preta.png' %}" alt="icone treino">
+                <h3>Treinos</h3>
+            </a>
+        </div>
+        <div>
+            <a href="{% url 'perfil' %}">
+                <img src="{% static 'icones-site/perfil-icon-verde.png' %}" alt="Logo perfil">
+                <h3>Perfil</h3>
+            </a>
+        </div>
+    </main> 
+    
+    </menu>
+</body>
+</html>

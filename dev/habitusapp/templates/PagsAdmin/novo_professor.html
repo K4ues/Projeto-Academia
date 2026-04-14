@@ -1,0 +1,280 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professor</title>
+    <link rel="icon" href ="{% static 'icones-site/logo-h-pequena.png' %}">
+    <link rel="stylesheet" href="{% static 'css/admin/novo_professor.css' %}">
+    <script src="{% static 'js/usuario/menu.js' %}"></script>
+</head>
+<body>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const input = document.getElementById('id_foto_perfil');
+        const preview = document.getElementById('preview-foto-perfil');
+        if(input){
+            input.addEventListener('change', function(e) {
+                const [file] = input.files;
+                if (file) {
+                    preview.src = URL.createObjectURL(file);
+                }
+            });
+        }
+    });
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const cpfInput = document.getElementById("id_cpf");
+            const telefoneInput = document.getElementById("id_telefone");
+
+            // Formatação CPF: xxx.xxx.xxx-xx
+            if (cpfInput) {
+                cpfInput.addEventListener("input", function (e) {
+                    let value = cpfInput.value.replace(/\D/g, ''); // remove tudo que não é número
+                    if (value.length > 11) value = value.slice(0, 11);
+                    value = value.replace(/(\d{3})(\d)/, "$1.$2");
+                    value = value.replace(/(\d{3})(\d)/, "$1.$2");
+                    value = value.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+                    cpfInput.value = value;
+                });
+            }
+
+            // Formatação Telefone: (DDD) 9xxxx-xxxx
+            if (telefoneInput) {
+                telefoneInput.addEventListener("input", function (e) {
+                    let value = telefoneInput.value.replace(/\D/g, ''); // remove tudo que não é número
+                    if (value.length > 11) value = value.slice(0, 11);
+
+                    if (value.length <= 10) {
+                        // formato antigo: (xx) xxxx-xxxx
+                        value = value.replace(/(\d{2})(\d)/, "($1) $2");
+                        value = value.replace(/(\d{4})(\d)/, "$1-$2");
+                    } else {
+                        // formato novo: (xx) 9xxxx-xxxx
+                        value = value.replace(/(\d{2})(\d)/, "($1) $2");
+                        value = value.replace(/(\d{5})(\d)/, "$1-$2");
+                    }
+                    telefoneInput.value = value;
+                });
+            }
+        });
+    </script>
+    <header>
+        <div class="seta-voltar">
+            <a href="javascript:history.back()">
+                <img src="{% static 'icones-site/seta-voltar.png' %}" alt="Ícone seta voltar">
+            </a>
+        </div>
+        <div class="logo-h">
+          <a href="{% url 'feed' %}"><img src="{% static 'icones-site/logo-h.png' %}" alt="Logo Habitus"></a>
+        </div>
+        <div class="menu-icon" onclick="toggleMenu()">
+          <img id="menu-icon" src="{% static 'icones-site/menu-lateral.png' %}" alt="Abrir Menu">
+        </div>
+    </header>
+      
+    {% if user.is_authenticated %}
+        {% if user.groups.first.name == "Aluno" %}
+            <!-- MENU PARA ALUNO -->
+            <nav id="menu-lateral" class="menu-lateral">
+                <div class="fechar">
+                    <h1>Menu</h1>
+                    <button class="fechar-menu" onclick="toggleMenu()">✕</button>
+                </div>
+                <ul>
+                    <div>
+                        <li><a href="{% url 'feed' %}"><img src="{% static 'icones-site/ultimas-noticias.png' %}" alt="">Últimas notícias</a></li>
+                        <li><a href="{% url 'notificacoes' %}"><img src="{% static 'icones-site/notificacoes.png' %}" alt="">Notificações</a></li>
+                        <li><a href="{% url 'historico' %}"><img src="{% static 'icones-site/historico.png' %}" alt="">Histórico</a></li>
+                        <li><a href="{% url 'solicitar_novo_treino' %}"><img src="{% static 'icones-site/solicitar-treino.png' %}" alt="">Solicitar novo treino</a></li>
+                    </div>
+                    <div>
+                        <li><a href="{% url 'configuracoes' %}"><img src="{% static 'icones-site/configuracoes.png' %}" alt="">Configurações</a></li>
+                        <!--<li><a href="{% url 'feed' %}"><img src="{% static 'icones-site/icone-avaliar.png' %}" alt="">Avaliar</a></li>-->
+                        <li><a href="{% url 'reportar_erro' %}"><img src="{% static 'icones-site/reportar-erro.png' %}" alt="">Reportar erro</a></li>
+                    </div>
+                    <div>
+                        <li><a href="{% url 'desenvolvedores' %}"><img src="{% static 'icones-site/desenvolvedores.png' %}" alt="">Desenvolvedores</a></li>
+                        <li><a href="{% url 'sobre_habitus' %}"><img src="{% static 'icones-site/sobre.png' %}" alt="">Sobre o Habitus</a></li>
+                    </div>
+                </ul>
+            </nav>
+
+        {% elif user.groups.first.name == "Professor" %}
+            <!-- MENU PARA PROFESSOR -->
+            <nav id="menu-lateral" class="menu-lateral">
+                <div class="fechar">
+                    <h1>Menu</h1>
+                    <button class="fechar-menu" onclick="toggleMenu()">✕</button>
+                </div>
+                <ul>
+                    <div>
+                        <li><a href="{% url 'feed' %}"><img src="{% static 'icones-site/ultimas-noticias.png' %}" alt="">Últimas notícias</a></li>
+                        <li><a href="{% url 'notificacoes' %}"><img src="{% static 'icones-site/notificacoes.png' %}" alt="">Notificações</a></li>
+                        <li><a href="{% url 'historico' %}"><img src="{% static 'icones-site/historico.png' %}" alt="">Histórico</a></li>
+                        <li><a href="{% url 'solicitar_novo_treino' %}"><img src="{% static 'icones-site/solicitar-treino.png' %}" alt="">Solicitar novo treino</a></li>
+                    </div>
+                    <div>
+                        <li><a href="{% url 'gerenciar_alunos' %}"><img src="{% static 'icones-site/icone-alunos.png' %}" alt="">Alunos</a></li>
+                        <li><a href="{% url 'gerenciar_noticias' %}"><img src="{% static 'icones-site/icone-noticias.png' %}" alt="">Notícias</a></li>
+                    </div>
+                    <div>
+                        <li><a href="{% url 'configuracoes' %}"><img src="{% static 'icones-site/configuracoes.png' %}" alt="">Configurações</a></li>
+                        <!--<li><a href="{% url 'feed' %}"><img src="{% static 'icones-site/icone-avaliar.png' %}" alt="">Avaliar</a></li>-->
+                        <li><a href="{% url 'reportar_erro' %}"><img src="{% static 'icones-site/reportar-erro.png' %}" alt="">Reportar erro</a></li>
+                    </div>
+                    <div>
+                        <li><a href="{% url 'desenvolvedores' %}"><img src="{% static 'icones-site/desenvolvedores.png' %}" alt="">Desenvolvedores</a></li>
+                        <li><a href="{% url 'sobre_habitus' %}"><img src="{% static 'icones-site/sobre.png' %}" alt="">Sobre o Habitus</a></li>
+                    </div>
+                </ul>
+            </nav>
+
+        {% elif user.groups.first.name == "Admin" %}
+            <!-- MENU PARA ADMIN -->
+            <nav id="menu-lateral" class="menu-lateral">
+                <div class="fechar">
+                    <h1>Menu</h1>
+                    <button class="fechar-menu" onclick="toggleMenu()">✕</button>
+                </div>
+                <ul>
+                    <div>
+                        <li><a href="{% url 'feed' %}"><img src="{% static 'icones-site/ultimas-noticias.png' %}" alt="">Últimas notícias</a></li>
+                        <li><a href="{% url 'notificacoes' %}"><img src="{% static 'icones-site/notificacoes.png' %}" alt="">Notificações</a></li>
+                        <li><a href="{% url 'historico' %}"><img src="{% static 'icones-site/historico.png' %}" alt="">Histórico</a></li>
+                        <li><a href="{% url 'solicitar_novo_treino' %}"><img src="{% static 'icones-site/solicitar-treino.png' %}" alt="">Solicitar novo treino</a></li>
+                    </div>
+                    <div>
+                        <li><a href="{% url 'gerenciar_alunos' %}"><img src="{% static 'icones-site/icone-alunos.png' %}" alt="">Alunos</a>
+                        <li><a href="{% url 'exercicios' %}"><img src="{% static 'icones-site/icone-exercicios.png' %}" alt="">Exercícios</a></li>
+                        <li><a href="{% url 'gerenciar_noticias' %}"><img src="{% static 'icones-site/icone-noticias.png' %}" alt="">Notícias</a></li>
+                        <li><a href="{% url 'professores' %}"><img src="{% static 'icones-site/icone-professores.png' %}" alt="">Professores</a></li>
+                    </div>
+                    <div>
+                        <li><a href="{% url 'configuracoes' %}"><img src="{% static 'icones-site/configuracoes.png' %}" alt="">Configurações</a></li>
+                        <!--<li><a href="{% url 'feed' %}"><img src="{% static 'icones-site/icone-avaliar.png' %}" alt="">Avaliações</a></li>-->
+                        <li><a href="{% url 'reportar_erro' %}"><img src="{% static 'icones-site/reportar-erro.png' %}" alt="">Reportar erro</a></li>
+                    </div>
+                    <div>
+                        <li><a href="{% url 'desenvolvedores' %}"><img src="{% static 'icones-site/desenvolvedores.png' %}" alt="">Desenvolvedores</a></li>
+                        <li><a href="{% url 'sobre_habitus' %}"><img src="{% static 'icones-site/sobre.png' %}" alt="">Sobre o Habitus</a></li>
+                    </div>
+                </ul>
+            </nav>
+        {% endif %}
+    {% endif %}
+    <main>
+    <section class="nome-pagina">
+        <h1>Novo professor</h1>
+    </section>
+    <section class="container">
+        {% if form.errors %}
+            <div class="alert alert-danger">
+                {% for field, errors in form.errors.items %}
+                    {% for error in errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                {% endfor %}
+            </div>
+        {% endif %}
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <label for="id_foto_perfil">
+                <img id="preview-foto-perfil" src="{% if form.foto_perfil.value %}{{ form.foto_perfil.value.url }}{% else %}{% static 'icones-site/sem-foto.png' %}{% endif %}" alt="Foto de perfil">
+                {{ form.foto_perfil }}
+            </label>
+            <div class="info">
+                <label for="id_nome">Nome:</label>
+                {{ form.nome }}
+            </div>
+
+            <div class="info">
+                <label for="id_username">Username:</label>
+                {{ form.username }}
+            </div>
+            <div class="linha">
+                <div class="info">
+                    <label for="id_matricula">Matrícula:</label>
+                    {{ form.matricula }}
+                </div>
+                <div class="info">
+                    <label for="id_data_nasc">Data de nascimento:</label>
+                    {{ form.data_nasc }}
+                </div>
+
+            </div>
+            
+
+            <div class="linha">
+                <div class="info">
+                    <label for="id_cpf">CPF:</label>
+                    <input type="text" name="cpf" id="id_cpf" required placeholder="xxx.xxx.xxx-xx">
+                </div>
+                <div class="info">
+                    <label for="id_telefone">Telefone:</label>
+                    {{ form.telefone }}
+                </div>
+            </div>
+
+            <div class="info">
+                <label for="id_email">Email:</label>
+                {{ form.email }}
+            </div>
+
+            <div class="info">
+                <label for="id_password">Senha:</label>
+                {{ form.password }}
+            </div>
+            
+            
+            <div class="linha">
+                <div class="info">
+                    <label for="{{ form.tipo_trabalho.id_for_label }}">Tipo de trabalho:</label>
+                    {{ form.tipo_trabalho }}
+                </div>
+                <div class="info">
+                    <label for="{{ form.data_admissao.id_for_label }}">Data de admissão:</label>
+                    {{ form.data_admissao }}
+                </div>
+            </div>
+
+            <div class="info">
+                <label for="{{ form.inst_formacao.id_for_label }}">Instituição de formação:</label>
+                {{ form.inst_formacao }}
+            </div>
+            <div class="botoes">
+                <a href="{% url 'professores' %}"><button type="button" class="cancel">Cancelar</button></a>
+                <button type="submit" class="save">Salvar</button>
+            </div>
+        </form>
+    </section>
+
+    <menu>
+        <div>
+            <a href="{% url 'feed' %}">
+                <img src="{% static 'icones-site/feed-icon-preta.png' %}" alt="Logo feed">
+                <h3>feed</h3>
+            </a>
+        </div>
+        <div>
+            <a href="{% url 'treinos' %}">
+                <img src="{% static 'icones-site/treino-icon-preta.png' %}" alt="icone treino">
+                <h3>Treinos</h3>
+            </a>
+        </div>
+        <div>
+            <a href="{% url 'perfil' %}">
+                <img src="{% static 'icones-site/perfil-icon-preta.png' %}" alt="Logo perfil">
+                <h3>Perfil</h3>
+            </a>
+        </div>
+    </main>
+    
+    </menu>
+</body>
+</html>

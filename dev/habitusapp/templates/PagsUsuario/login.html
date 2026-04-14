@@ -1,0 +1,77 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="icon" href="{% static 'icones-site/logo-h-pequena.png' %}">
+    <link rel="stylesheet" href="{% static 'css/usuario/login.css' %}">
+    <link rel="stylesheet" href="{% static 'css/usuario/aviso.css' %}">
+    <script src="{% static 'js/usuario/login.js' %}"></script>
+    <script src="{% static 'js/usuario/aviso.js' %}"></script>
+</head>
+<body>
+    <main class="login-container">
+        <div class="login-header">
+            <img src="{% static 'icones-site/logo-nome-completo.png' %}" alt="Logo Habitus completo">
+        </div>
+
+        <div class="login-box">
+            <h1>Bem-vindo(a) ao Habitus!</h1>
+            <p>Entre ou crie sua conta e comece agora a transformação rumo à sua melhor versão.</p>
+            <!--PARTE PARA AVISO, ISSO DEVE SER PADRÃO-->
+            {% if form.errors %}
+                <div class="alert alert-danger">
+                    {% for field, errors in form.errors.items %}
+                        {% for error in errors %}
+                            <p>{{ field|title }}: {{ error }}</p>
+                        {% endfor %}
+                    {% endfor %}
+                </div>
+            {% endif %}
+            
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+            <!--FIM DE AVISO AQUI!!-->
+
+            <form method="POST">
+                {% csrf_token %}
+                <label for="email">E-mail:</label>
+                <input type="email" id="email" name="email" placeholder="Digite seu e-mail de acesso">
+
+                <label for="senha">Senha:</label>
+                <div style="position: relative;">
+                    <input type="password" id="senha" name="senha" placeholder="Digite sua senha">
+                    <img 
+                        src="{% static 'icones-site/olho-fechado.png' %}" 
+                        id="iconeSenha" 
+                        data-aberto="{% static 'icones-site/olho-aberto.png' %}" 
+                        data-fechado="{% static 'icones-site/olho-fechado.png' %}" 
+                        onclick="toggleSenha()" 
+                        style="width: 20px; height: 20px; cursor: pointer; position: absolute; right: 10px; top: 50%; transform: translateY(-50%);">
+
+                </div>
+
+                <a href="#" class="recuperar-senha">Recuperar senha</a>
+
+                <button type="submit" class="btn-principal">Entrar</button>
+                <a href="{% url 'criar_conta' %}" class="btn-secundario">Criar Conta</a>
+
+                <div class="ou-linha">
+                    <span>Ou</span>
+                </div>
+
+                <a href="{% url 'feed' %}" class="btn-suap">
+                    Entrar com o <img src="{% static 'icones-site/suap-logo.png' %}" alt="Logo SUAP">
+                </a>
+            </form>
+        </div>
+    </main>
+</body>
+</html>

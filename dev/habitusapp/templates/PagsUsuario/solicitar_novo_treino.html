@@ -1,0 +1,640 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solicitar novo treino</title>
+    <link rel="icon" href ="{% static 'icones-site/logo-h-pequena.png' %}">
+    <link rel="stylesheet" href="{% static 'css/usuario/solicitar_novo_treino.css' %}">
+    <link rel="stylesheet" href="{% static 'css/usuario/aviso.css' %}">
+    <script src="{% static 'js/usuario/menu.js' %}"></script>
+    <script src="{% static 'js/usuario/aviso.js' %}"></script>
+</head>
+<body>
+    <header>
+        <div class="seta-voltar">
+            <a href="javascript:history.back()">
+                <img src="{% static 'icones-site/seta-voltar.png' %}" alt="Ícone seta voltar">
+            </a>
+        </div>
+        <div class="logo-h">
+          <a href="{% url 'feed' %}"><img src="{% static 'icones-site/logo-h.png' %}" alt="Logo Habitus"></a>
+        </div>
+        <div class="menu-icon" onclick="toggleMenu()">
+          <img id="menu-icon" src="{% static 'icones-site/menu-lateral.png' %}" alt="Abrir Menu">
+        </div>
+    </header>
+      
+{% if user.is_authenticated %}
+        {% if user.groups.first.name == "Aluno" %}
+            <!-- MENU PARA ALUNO -->
+            <nav id="menu-lateral" class="menu-lateral">
+                <div class="fechar">
+                    <h1>Menu</h1>
+                    <button class="fechar-menu" onclick="toggleMenu()">✕</button>
+                </div>
+                <ul>
+                    <div>
+                        <li><a href="{% url 'feed' %}"><img src="{% static 'icones-site/ultimas-noticias.png' %}" alt="">Últimas notícias</a></li>
+                        <li><a href="{% url 'notificacoes' %}"><img src="{% static 'icones-site/notificacoes.png' %}" alt="">Notificações</a></li>
+                        <li><a href="{% url 'historico' %}"><img src="{% static 'icones-site/historico.png' %}" alt="">Histórico</a></li>
+                        <li><a href="{% url 'solicitar_novo_treino' %}"><img src="{% static 'icones-site/solicitar-treino.png' %}" alt="">Solicitar novo treino</a></li>
+                    </div>
+                    <div>
+                        <li><a href="{% url 'configuracoes' %}"><img src="{% static 'icones-site/configuracoes.png' %}" alt="">Configurações</a></li>
+                        <!--<li><a href="{% url 'feed' %}"><img src="{% static 'icones-site/icone-avaliar.png' %}" alt="">Avaliar</a></li>-->
+                        <li><a href="{% url 'reportar_erro' %}"><img src="{% static 'icones-site/reportar-erro.png' %}" alt="">Reportar erro</a></li>
+                    </div>
+                    <div>
+                        <li><a href="{% url 'desenvolvedores' %}"><img src="{% static 'icones-site/desenvolvedores.png' %}" alt="">Desenvolvedores</a></li>
+                        <li><a href="{% url 'sobre_habitus' %}"><img src="{% static 'icones-site/sobre.png' %}" alt="">Sobre o Habitus</a></li>
+                    </div>
+                </ul>
+            </nav>
+
+        {% elif user.groups.first.name == "Professor" %}
+            <!-- MENU PARA PROFESSOR -->
+            <nav id="menu-lateral" class="menu-lateral">
+                <div class="fechar">
+                    <h1>Menu</h1>
+                    <button class="fechar-menu" onclick="toggleMenu()">✕</button>
+                </div>
+                <ul>
+                    <div>
+                        <li><a href="{% url 'feed' %}"><img src="{% static 'icones-site/ultimas-noticias.png' %}" alt="">Últimas notícias</a></li>
+                        <li><a href="{% url 'notificacoes' %}"><img src="{% static 'icones-site/notificacoes.png' %}" alt="">Notificações</a></li>
+                        <li><a href="{% url 'historico' %}"><img src="{% static 'icones-site/historico.png' %}" alt="">Histórico</a></li>
+                        <li><a href="{% url 'solicitar_novo_treino' %}"><img src="{% static 'icones-site/solicitar-treino.png' %}" alt="">Solicitar novo treino</a></li>
+                    </div>
+                    <div>
+                        <li><a href="{% url 'gerenciar_alunos' %}"><img src="{% static 'icones-site/icone-alunos.png' %}" alt="">Alunos</a></li>
+                        <li><a href="{% url 'gerenciar_noticias' %}"><img src="{% static 'icones-site/icone-noticias.png' %}" alt="">Notícias</a></li>
+                    </div>
+                    <div>
+                        <li><a href="{% url 'configuracoes' %}"><img src="{% static 'icones-site/configuracoes.png' %}" alt="">Configurações</a></li>
+                        <!--<li><a href="{% url 'feed' %}"><img src="{% static 'icones-site/icone-avaliar.png' %}" alt="">Avaliar</a></li>-->
+                        <li><a href="{% url 'reportar_erro' %}"><img src="{% static 'icones-site/reportar-erro.png' %}" alt="">Reportar erro</a></li>
+                    </div>
+                    <div>
+                        <li><a href="{% url 'desenvolvedores' %}"><img src="{% static 'icones-site/desenvolvedores.png' %}" alt="">Desenvolvedores</a></li>
+                        <li><a href="{% url 'sobre_habitus' %}"><img src="{% static 'icones-site/sobre.png' %}" alt="">Sobre o Habitus</a></li>
+                    </div>
+                </ul>
+            </nav>
+
+        {% elif user.groups.first.name == "Admin" %}
+            <!-- MENU PARA ADMIN -->
+            <nav id="menu-lateral" class="menu-lateral">
+                <div class="fechar">
+                    <h1>Menu</h1>
+                    <button class="fechar-menu" onclick="toggleMenu()">✕</button>
+                </div>
+                <ul>
+                    <div>
+                        <li><a href="{% url 'feed' %}"><img src="{% static 'icones-site/ultimas-noticias.png' %}" alt="">Últimas notícias</a></li>
+                        <li><a href="{% url 'notificacoes' %}"><img src="{% static 'icones-site/notificacoes.png' %}" alt="">Notificações</a></li>
+                        <li><a href="{% url 'historico' %}"><img src="{% static 'icones-site/historico.png' %}" alt="">Histórico</a></li>
+                        <li><a href="{% url 'solicitar_novo_treino' %}"><img src="{% static 'icones-site/solicitar-treino.png' %}" alt="">Solicitar novo treino</a></li>
+                    </div>
+                    <div>
+                        <li><a href="{% url 'gerenciar_alunos' %}"><img src="{% static 'icones-site/icone-alunos.png' %}" alt="">Alunos</a>
+                        <li><a href="{% url 'exercicios' %}"><img src="{% static 'icones-site/icone-exercicios.png' %}" alt="">Exercícios</a></li>
+                        <li><a href="{% url 'gerenciar_noticias' %}"><img src="{% static 'icones-site/icone-noticias.png' %}" alt="">Notícias</a></li>
+                        <li><a href="{% url 'professores' %}"><img src="{% static 'icones-site/icone-professores.png' %}" alt="">Professores</a></li>
+                    </div>
+                    <div>
+                        <li><a href="{% url 'configuracoes' %}"><img src="{% static 'icones-site/configuracoes.png' %}" alt="">Configurações</a></li>
+                        <!--<li><a href="{% url 'feed' %}"><img src="{% static 'icones-site/icone-avaliar.png' %}" alt="">Avaliações</a></li>-->
+                        <li><a href="{% url 'reportar_erro' %}"><img src="{% static 'icones-site/reportar-erro.png' %}" alt="">Reportar erro</a></li>
+                    </div>
+                    <div>
+                        <li><a href="{% url 'desenvolvedores' %}"><img src="{% static 'icones-site/desenvolvedores.png' %}" alt="">Desenvolvedores</a></li>
+                        <li><a href="{% url 'sobre_habitus' %}"><img src="{% static 'icones-site/sobre.png' %}" alt="">Sobre o Habitus</a></li>
+                    </div>
+                </ul>
+            </nav>
+        {% endif %}
+    {% endif %}
+
+    <main>
+        <section class="nome-pagina">
+            <h1>Solicitar novo treino</h1>
+        </section>
+        <section class="container">
+
+            <div class="tabs">
+                <button class="tab-btn {% if aba_ativa == 'professores' %}active{% endif %}" data-tab="professores">Professores</button>
+                <button class="tab-btn {% if aba_ativa == 'solicitacoes' %}active{% endif %}" data-tab="solicitacoes">Minhas Solicitações</button>
+            </div>
+            {% if user.groups.first.name == "Professor" %}
+                <div class="tabs">
+                    <button class="tab-btn {% if aba_ativa == 'solicitacoes-alunos' %}active{% endif %}" data-tab="solicitacoes-alunos">Solicitações de alunos</button>
+                </div>
+            {% endif %}
+
+            <script>
+                document.addEventListener("DOMContentLoaded", function () {
+                    const inputBusca = document.querySelector('input[name="busca"]');
+                    const cardsProfessores = document.querySelectorAll(".professor-card");
+
+                    // Cria mensagem "Nenhum professor encontrado"
+                    let msgNaoEncontrado = document.createElement("p");
+                    msgNaoEncontrado.textContent = "Nenhum professor encontrado.";
+                    msgNaoEncontrado.classList.add("mensagem-nao-encontrado");
+                    msgNaoEncontrado.style.display = "none";
+
+                    // Adiciona mensagem no final da lista de professores
+                    const listaProfessores = document.querySelector(".lista-professores");
+                    listaProfessores.appendChild(msgNaoEncontrado);
+
+                    // Função que filtra os professores
+                    function filtrarProfessores() {
+                        const termo = inputBusca.value.trim().toLowerCase();
+                        let algumEncontrado = false;
+
+                        cardsProfessores.forEach(card => {
+                            const nome = card.querySelector("h3").textContent.toLowerCase();
+                            const matricula = card.querySelector("p").textContent.toLowerCase();
+
+                            if (nome.includes(termo) || matricula.includes(termo)) {
+                                card.style.display = "flex";
+                                algumEncontrado = true;
+                            } else {
+                                card.style.display = "none";
+                            }
+                        });
+
+                        // Mostra ou oculta a mensagem conforme o resultado
+                        msgNaoEncontrado.style.display = algumEncontrado ? "none" : "block";
+                    }
+
+                    // Atualiza a lista conforme o usuário digita
+                    inputBusca.addEventListener("input", filtrarProfessores);
+                });
+
+            </script>
+            <!--PARTE PARA AVISO, ISSO DEVE SER PADRÃO-->
+            {% if form.errors %}
+                <div class="alert alert-danger">
+                    {% for field, errors in form.errors.items %}
+                        {% for error in errors %}
+                            <p>{{ field|title }}: {{ error }}</p>
+                        {% endfor %}
+                    {% endfor %}
+                </div>
+            {% endif %}
+            
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+            <!--FIM DE AVISO AQUI!!-->
+
+            <div id="tab-professores" class="tab-content {% if aba_ativa == 'professores' %}active{% endif %}">
+                <div class="search-wrapper">
+                    <input type="text" name="busca" placeholder="Localize o professor pelo nome ou matrícula" value="{{ busca }}" oninput="this.form.submit()"/>
+                    <img src="{% static 'icones-site/lupa.png' %}" alt="Lupa">
+                </div>
+                <section class="lista-professores">
+                {% for prof in professores %}
+                    <div class="professor-card">
+                    {% if prof.foto_perfil %}
+                        <img src="{{ prof.foto_perfil.url }}" alt="{{ prof.nome }}">
+                    {% else %}
+                        <img src="{% static 'icones-site/sem-foto.png' %}" alt="Sem foto">
+                    {% endif %}
+                    <h3>{{ prof.nome }}</h3>
+                    <p>{{ prof.matricula }}</p>
+                    <a href="{% url 'solicitar_treino_professor' prof.id %}">Solicitar</a>
+                    </div>
+                {% empty %}
+                    <p>Nenhum professor encontrado.</p>
+                {% endfor %}
+                </section>
+            </div>
+            <div id="tab-solicitacoes" class="tab-content {% if aba_ativa == 'solicitacoes' %}active{% endif %}">
+                <h2>Minhas Solicitações</h2>
+
+                <!--FILTROS AQUI-->
+                <h3 class="filtro">Filtros:</h3>
+                <div class="data-container">
+                    <div class="custom-date">
+                        <span id="label-inicio">Data início <i class="fa-solid fa-calendar-days"></i></span>
+                        <img src="{% static 'icones-site/icone-calen.png' %}" alt="Ícone calendário"
+                            onclick="document.getElementById('data-inicio-solicitacoes').showPicker()">
+                        <input type="date" id="data-inicio-solicitacoes" name="data_inicio" 
+                            value="{{ data_inicio_selecionada }}">
+                    </div>
+
+                    <div class="custom-date">
+                        <span id="label-fim">Data fim <i class="fa-solid fa-calendar-days"></i></span>
+                        <img src="{% static 'icones-site/icone-calen.png' %}" alt="Ícone calendário"
+                            onclick="document.getElementById('data-fim-solicitacoes').showPicker()">
+                        <input type="date" id="data-fim-solicitacoes" name="data_fim" 
+                            value="{{ data_fim_selecionada }}">
+                    </div>
+                </div>
+
+                <form method="get" class="filtro-form">
+                    <input type="hidden" name="aba" value="solicitacoes">
+                    <select id="situacao" name="situacao" onchange="this.form.submit()">
+                        <option value="A" {% if situacao_selecionada == "A" %}selected{% endif %}>Aberta</option>
+                        <option value="C" {% if situacao_selecionada == "C" %}selected{% endif %}>Concluída</option>
+                        <option value="R" {% if situacao_selecionada == "R" %}selected{% endif %}>Recusada</option>
+                    </select>
+                </form>
+
+                {% if solicitacoes %}
+                    <div class="solicitacoes-container">
+                        {% for sol in solicitacoes %}
+                        <div class="solicitacao-card">
+                            <div class="solicitacao-info">
+                                <div>
+                                    <strong>Professor:</strong> 
+                                    <p>{{ sol.professor.nome }}</p>
+                                </div>
+                                <div>
+                                    <strong>Mensagem:</strong> 
+                                    <p>{{ sol.descricao }}</p>
+                                </div>
+                                <div>
+                                    <strong>Data:</strong> 
+                                    <p>{{ sol.criado_em|date:"d/m/Y H:i" }}</p>
+                                </div>
+                            </div>
+                            <div class="solicitacao-status">
+                                {% if sol.status == 'A' %}
+                                    <span class="status-aberta">Aberta</span>
+                                {% elif sol.status == 'C' %}
+                                    <span class="status-concluida">Concluída</span>
+                                {% else %}
+                                    <span class="status-recusada">Recusada</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="sem-solicitacao">Você ainda não fez solicitações.</p>
+                {% endif %}
+            </div>
+
+            {% if user.groups.first.name == "Professor" %}
+            <div id="tab-solicitacoes-alunos" class="tab-content {% if aba_ativa == 'solicitacoes-alunos' %}active{% endif %}">
+                <h2>Solicitações de alunos</h2>
+
+                <!--FILTROS AQUI-->
+                <h3 class="filtro">Filtros:</h3>
+                <div class="data-container">
+                    <div class="custom-date">
+                        <span id="label-inicio-alunos">Data início <i class="fa-solid fa-calendar-days"></i></span>
+                        <img src="{% static 'icones-site/icone-calen.png' %}" alt="Ícone calendário"
+                            onclick="document.getElementById('data-inicio-alunos').showPicker()">
+                        <input type="date" id="data-inicio-alunos" name="data_inicio_alunos" 
+                            value="{{ data_inicio_selecionada_alunos }}">
+                    </div>
+
+                    <div class="custom-date">
+                        <span id="label-fim-alunos">Data fim <i class="fa-solid fa-calendar-days"></i></span>
+                        <img src="{% static 'icones-site/icone-calen.png' %}" alt="Ícone calendário"
+                            onclick="document.getElementById('data-fim-alunos').showPicker()">
+                        <input type="date" id="data-fim-alunos" name="data_fim_alunos" 
+                            value="{{ data_fim_selecionada_alunos }}">
+                    </div>
+                </div>
+
+                <form method="get" class="filtro-form">
+                    <input type="hidden" name="aba" value="solicitacoes-alunos">
+                    <select id="situacao-alunos" name="situacao_alunos" onchange="this.form.submit()">
+                        <option value="A" {% if situacao_selecionada_alunos == "A" %}selected{% endif %}>Aberta</option>
+                        <option value="C" {% if situacao_selecionada_alunos == "C" %}selected{% endif %}>Concluída</option>
+                        <option value="R" {% if situacao_selecionada_alunos == "R" %}selected{% endif %}>Recusada</option>
+                    </select>
+                </form>
+                
+                {% if solicitacoes_alunos %}
+                    <div class="solicitacoes-lista">
+                        {% for sol in solicitacoes_alunos %}
+                        <div class="solicitacao-card">
+                            
+                            <div class="solicitacao-linha">
+                                <span class="label">Aluno:</span>
+                                <span class="valor">{{ sol.usuario.username }}</span>
+                            </div>
+
+                            <div class="solicitacao-linha">
+                                <span class="label">Mensagem:</span>
+                                <span class="valor">{{ sol.descricao }}</span>
+                            </div>
+
+                            <div class="solicitacao-linha">
+                                <span class="label">Data:</span>
+                                <span class="valor">{{ sol.criado_em|date:"d/m/Y H:i" }}</span>
+                            </div>
+
+                            <div class="solicitacao-linha">
+                                <span class="label">Status:</span>
+                                <span class="valor">
+                                    {% if sol.status == 'A' %}
+                                        <span class="status status-aberta">Aberta</span>
+                                    {% elif sol.status == 'C' %}
+                                        <span class="status status-concluida">Concluída</span>
+                                    {% else %}
+                                        <span class="status status-recusada">Recusada</span>
+                                    {% endif %}
+                                </span>
+                            </div>
+
+                            <div class="solicitacao-acoes">
+                                {% if sol.status == 'A' %}
+                                    <div class="confirmar_recusar">
+                                        <a class="btn-acao aceitar" href="{% url 'aceitar_solicitacao' sol.id %}">Confirmar</a>
+                                        <a class="btn-acao recusar" href="{% url 'recusar_solicitacao' sol.id %}">Recusar</a>
+                                    </div>
+                                    <div class="ver_treinos">
+                                        <a href="{% url 'ver_treinos_usuario' sol.usuario.id %}">Ver treinos</a>
+                                    </div>
+                                {% else %}
+                                    <div class="ver_treinos">
+                                        <a href="{% url 'ver_treinos_usuario' sol.usuario.id %}">Ver treinos</a>
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="sem-solicitacao">Nenhuma solicitação encontrada.</p>
+                {% endif %}
+            </div>
+            {% endif %}
+
+
+        </section>
+        
+       <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Configuração inicial das abas baseada no parâmetro da URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const abaAtiva = urlParams.get('aba') || 'professores';
+            
+            // Ativar a aba correta
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabButtons.forEach(btn => {
+                if (btn.dataset.tab === abaAtiva) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+            
+            tabContents.forEach(content => {
+                if (content.id === `tab-${abaAtiva}`) {
+                    content.classList.add('active');
+                } else {
+                    content.classList.remove('active');
+                }
+            });
+
+            // Event listeners para as abas
+            tabButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const abaClicada = btn.dataset.tab;
+                    
+                    // Atualizar URL sem recarregar a página, mantendo os filtros
+                    const urlParams = new URLSearchParams(window.location.search);
+                    urlParams.set('aba', abaClicada);
+                    
+                    // Manter outros parâmetros existentes
+                    const novaURL = `${window.location.pathname}?${urlParams.toString()}`;
+                    window.history.replaceState({}, '', novaURL);
+                    
+                    // Atualizar visualmente as abas
+                    tabButtons.forEach(b => b.classList.remove('active'));
+                    tabContents.forEach(c => c.classList.remove('active'));
+                    
+                    btn.classList.add('active');
+                    document.getElementById(`tab-${abaClicada}`).classList.add('active');
+                });
+            });
+
+            // Filtro de busca de professores
+            const inputBusca = document.querySelector('input[name="busca"]');
+            if (inputBusca) {
+                const cardsProfessores = document.querySelectorAll(".professor-card");
+                let msgNaoEncontrado = document.createElement("p");
+                msgNaoEncontrado.textContent = "Nenhum professor encontrado.";
+                msgNaoEncontrado.classList.add("mensagem-nao-encontrado");
+                msgNaoEncontrado.style.display = "none";
+                
+                const listaProfessores = document.querySelector(".lista-professores");
+                listaProfessores.appendChild(msgNaoEncontrado);
+
+                function filtrarProfessores() {
+                    const termo = inputBusca.value.trim().toLowerCase();
+                    let algumEncontrado = false;
+                    
+                    cardsProfessores.forEach(card => {
+                        const nome = card.querySelector("h3").textContent.toLowerCase();
+                        const matricula = card.querySelector("p").textContent.toLowerCase();
+                        
+                        if (nome.includes(termo) || matricula.includes(termo)) {
+                            card.style.display = "flex";
+                            algumEncontrado = true;
+                        } else {
+                            card.style.display = "none";
+                        }
+                    });
+                    
+                    msgNaoEncontrado.style.display = algumEncontrado ? "none" : "block";
+                }
+
+                inputBusca.addEventListener("input", filtrarProfessores);
+            }
+
+            // Sistema de filtros por data e situação
+            inicializarFiltros();
+        });
+
+        function inicializarFiltros() {
+            // Configurar eventos para cada aba separadamente
+            const abaAtiva = new URLSearchParams(window.location.search).get('aba') || 'professores';
+            
+            if (abaAtiva === 'solicitacoes') {
+                // Filtros para "Minhas Solicitações"
+                const dataInicioSolicitacoes = document.getElementById('data-inicio-solicitacoes');
+                const dataFimSolicitacoes = document.getElementById('data-fim-solicitacoes');
+                const situacaoSolicitacoes = document.getElementById('situacao');
+                
+                if (dataInicioSolicitacoes) dataInicioSolicitacoes.addEventListener('change', aplicarFiltrosSolicitacoes);
+                if (dataFimSolicitacoes) dataFimSolicitacoes.addEventListener('change', aplicarFiltrosSolicitacoes);
+                if (situacaoSolicitacoes) situacaoSolicitacoes.addEventListener('change', aplicarFiltrosSolicitacoes);
+                
+            } else if (abaAtiva === 'solicitacoes-alunos') {
+                // Filtros para "Solicitações de Alunos"
+                const dataInicioAlunos = document.getElementById('data-inicio-alunos');
+                const dataFimAlunos = document.getElementById('data-fim-alunos');
+                const situacaoAlunos = document.getElementById('situacao-alunos');
+                
+                if (dataInicioAlunos) dataInicioAlunos.addEventListener('change', aplicarFiltrosAlunos);
+                if (dataFimAlunos) dataFimAlunos.addEventListener('change', aplicarFiltrosAlunos);
+                if (situacaoAlunos) situacaoAlunos.addEventListener('change', aplicarFiltrosAlunos);
+            }
+            
+            preencherFiltrosDaURL();
+            configurarLabelsData();
+        }
+
+        function aplicarFiltrosSolicitacoes() {
+            const urlParams = new URLSearchParams();
+            urlParams.set('aba', 'solicitacoes');
+            
+            // Coletar valores dos filtros da aba "Minhas Solicitações"
+            const dataInicio = document.getElementById('data-inicio-solicitacoes')?.value;
+            const dataFim = document.getElementById('data-fim-solicitacoes')?.value;
+            const situacao = document.getElementById('situacao')?.value;
+            
+            if (dataInicio) urlParams.set('data_inicio', dataInicio);
+            if (dataFim) urlParams.set('data_fim', dataFim);
+            if (situacao) urlParams.set('situacao', situacao);
+            
+            // Recarregar a página com os novos filtros
+            const novaURL = `${window.location.pathname}?${urlParams.toString()}`;
+            window.location.href = novaURL;
+        }
+
+        function aplicarFiltrosAlunos() {
+            const urlParams = new URLSearchParams();
+            urlParams.set('aba', 'solicitacoes-alunos');
+            
+            // Coletar valores dos filtros da aba "Solicitações de Alunos"
+            const dataInicio = document.getElementById('data-inicio-alunos')?.value;
+            const dataFim = document.getElementById('data-fim-alunos')?.value;
+            const situacao = document.getElementById('situacao-alunos')?.value;
+            
+            if (dataInicio) urlParams.set('data_inicio_alunos', dataInicio);
+            if (dataFim) urlParams.set('data_fim_alunos', dataFim);
+            if (situacao) urlParams.set('situacao_alunos', situacao);
+            
+            // Recarregar a página com os novos filtros
+            const novaURL = `${window.location.pathname}?${urlParams.toString()}`;
+            window.location.href = novaURL;
+        }
+
+        function preencherFiltrosDaURL() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const abaAtiva = urlParams.get('aba') || 'professores';
+            
+            if (abaAtiva === 'solicitacoes') {
+                // Preencher filtros para "Minhas Solicitações"
+                const dataInicioURL = urlParams.get('data_inicio');
+                const dataFimURL = urlParams.get('data_fim');
+                const situacaoURL = urlParams.get('situacao');
+                
+                const dataInicioInput = document.getElementById('data-inicio-solicitacoes');
+                const dataFimInput = document.getElementById('data-fim-solicitacoes');
+                const situacaoSelect = document.getElementById('situacao');
+                
+                if (dataInicioURL && dataInicioInput) dataInicioInput.value = dataInicioURL;
+                if (dataFimURL && dataFimInput) dataFimInput.value = dataFimURL;
+                if (situacaoURL && situacaoSelect) situacaoSelect.value = situacaoURL;
+                
+            } else if (abaAtiva === 'solicitacoes-alunos') {
+                // Preencher filtros para "Solicitações de Alunos"
+                const dataInicioURL = urlParams.get('data_inicio_alunos');
+                const dataFimURL = urlParams.get('data_fim_alunos');
+                const situacaoURL = urlParams.get('situacao_alunos');
+                
+                const dataInicioInput = document.getElementById('data-inicio-alunos');
+                const dataFimInput = document.getElementById('data-fim-alunos');
+                const situacaoSelect = document.getElementById('situacao-alunos');
+                
+                if (dataInicioURL && dataInicioInput) dataInicioInput.value = dataInicioURL;
+                if (dataFimURL && dataFimInput) dataFimInput.value = dataFimURL;
+                if (situacaoURL && situacaoSelect) situacaoSelect.value = situacaoURL;
+            }
+            
+            configurarLabelsData();
+        }
+
+        function configurarLabelsData() {
+            // Configurar labels para todas as abas
+            const abas = [
+                { prefix: 'solicitacoes', dataInicioId: 'data-inicio-solicitacoes', dataFimId: 'data-fim-solicitacoes' },
+                { prefix: 'alunos', dataInicioId: 'data-inicio-alunos', dataFimId: 'data-fim-alunos' }
+            ];
+            
+            abas.forEach(aba => {
+                const dataInicioInput = document.getElementById(aba.dataInicioId);
+                const dataFimInput = document.getElementById(aba.dataFimId);
+                
+                if (dataInicioInput) {
+                    const labelInicio = document.getElementById(`label-inicio-${aba.prefix}`) || 
+                                    dataInicioInput.closest('.custom-date')?.querySelector('span');
+                    if (labelInicio && dataInicioInput.value) {
+                        labelInicio.textContent = formatarData(dataInicioInput.value);
+                    } else if (labelInicio) {
+                        labelInicio.textContent = 'Data início';
+                    }
+                }
+                
+                if (dataFimInput) {
+                    const labelFim = document.getElementById(`label-fim-${aba.prefix}`) || 
+                                    dataFimInput.closest('.custom-date')?.querySelector('span');
+                    if (labelFim && dataFimInput.value) {
+                        labelFim.textContent = formatarData(dataFimInput.value);
+                    } else if (labelFim) {
+                        labelFim.textContent = 'Data fim';
+                    }
+                }
+            });
+        }
+
+        function formatarData(dataISO) {
+            const data = new Date(dataISO + 'T00:00:00');
+            return data.toLocaleDateString('pt-BR');
+        }
+
+        // Função para limpar filtros
+        function limparFiltros() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const aba = urlParams.get('aba') || 'solicitacoes';
+            
+            // Redirecionar para URL sem filtros, mantendo apenas a aba
+            window.location.href = `${window.location.pathname}?aba=${aba}`;
+        }
+        </script>
+
+        
+        <menu>
+            <div>
+            <a href="{% url 'feed' %}">
+                <img src="{% static 'icones-site/feed-icon-preta.png' %}" alt="Logo feed">
+                <h3>feed</h3>
+            </a>
+            </div>
+            <div>
+                <a href="{% url 'treinos' %}">
+                    <img src="{% static 'icones-site/treino-icon-preta.png' %}" alt="icone treino">
+                    <h3>Treinos</h3>
+                </a>
+            </div>
+            <div>
+                <a href="{% url 'perfil' %}">
+                    <img src="{% static 'icones-site/perfil-icon-preta.png' %}" alt="Logo perfil">
+                    <h3>Perfil</h3>
+                </a>
+            </div>
+    </main>
+    
+    </menu>
+</body>
+</html>

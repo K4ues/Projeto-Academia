@@ -1,0 +1,176 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Criar conta - Habitus</title>
+    <link rel="icon" href="{% static 'icones-site/logo-h-pequena.png' %}">
+    <link rel="stylesheet" href="{% static 'css/usuario/criar_conta.css' %}">
+    <link rel="stylesheet" href="{% static 'css/usuario/aviso.css' %}">
+    <script src="{% static 'js/usuario/aviso.js' %}"></script>
+</head>
+<body>
+    <script>
+        function previewImagem() {
+            const input = document.getElementById('id_foto_perfil');
+            const preview = document.getElementById('preview-foto');
+            const removerBtn = document.getElementById('remover-foto-btn');
+
+            const file = input.files[0];
+            if (file) {
+                preview.src = URL.createObjectURL(file);
+                removerBtn.style.display = 'inline-block';  // Mostrar o botão
+            }
+        }
+
+        function removerFoto() {
+            const input = document.getElementById('id_foto_perfil');
+            const preview = document.getElementById('preview-foto');
+            const removerBtn = document.getElementById('remover-foto-btn');
+
+            // Limpar o input
+            input.value = '';
+
+            // Voltar a imagem padrão
+            preview.src = "{% static 'icones-site/sem-foto.png' %}";
+
+            // Esconder o botão novamente
+            removerBtn.style.display = 'none';
+        }
+    </script>
+
+    <main class="login-container">
+        <div class="login-header">
+            <img src="{% static 'icones-site/logo-nome-completo.png' %}" alt="Logo Habitus completo">
+        </div>
+
+        <div class="login-box">
+            <!--PARTE PARA AVISO, ISSO DEVE SER PADRÃO-->
+            {% if form.errors %}
+                <div class="alert alert-danger">
+                    {% for field, errors in form.errors.items %}
+                        {% for error in errors %}
+                            <p>{{ field|title }}: {{ error }}</p>
+                        {% endfor %}
+                    {% endfor %}
+                </div>
+            {% endif %}
+            
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+            <!--FIM DE AVISO AQUI!!-->
+
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <!-- Imagem de preview que serve como botão -->
+                <label for="id_foto_perfil" class="input_foto">
+                    {% if request.user.aluno.foto_perfil %}
+                        <img src="{{ request.user.aluno.foto_perfil.url }}" alt="Foto de Perfil" style="width: 150px; height: 150px; object-fit: cover; border-radius: 50%;">
+                    {% else %}
+                        <img id="preview-foto" src="{% static 'icones-site/sem-foto.png' %}" alt="Foto de Perfil Padrão" style="width: 150px; height: 150px; object-fit: cover; border-radius: 50%;">
+                    {% endif %}
+                </label>
+                
+                <!-- Input invisível (mas funcional) -->
+                <input type="file" name="foto_perfil" id="id_foto_perfil" accept="image/*" style="display: none;" onchange="previewImagem()">
+                <h2>Foto de perfil</h2>
+                <!-- Botão de remover (começa escondido) -->
+                <button type="button" id="remover-foto-btn" onclick="removerFoto()" style="display:none;">Remover Foto</button>
+
+                <h1>DADOS PESSOAIS</h1>
+                <!-- Campo: Nome completo -->
+                <label for="id_nome">Nome:</label>
+                <input type="text" name="nome" id="id_nome" required placeholder="Insira o seu nome completo">
+                <label for="id_matricula">Matrícula:</label>
+                <input type="text" name="matricula" id="id_matricula" placeholder="Insira sua matrícula (opcional)">
+
+                
+                <div class="usuario-data">
+                    <!-- Campo: Nome de usuário -->
+                    <div>
+                        <label for="id_username">Usuário:</label>
+                        <input type="text" name="username" id="id_username" required placeholder="Crie seu username">
+                    </div>
+                
+                    <!-- Campo: Data de nascimento -->
+                     <div>
+                        <label for="id_data_nasc">Data de nascimento:</label>
+                        <input type="date" name="data_nasc" id="id_data_nasc" required>
+                    </div>
+                </div>
+
+                <div class="cpf-telefone">
+                    <!-- CPF -->
+                        <div>
+                            <label for="id_cpf">CPF:</label>
+                            <input type="text" name="cpf" id="id_cpf" required placeholder="xxx.xxx.xxx-xx" maxlength="14">
+                        </div>
+
+                        <!-- Telefone -->
+                        <div>
+                            <label for="id_telefone">Telefone:</label>
+                            <input type="text" name="telefone" id="id_telefone" placeholder="(xx) xxxxx-xxxx" maxlength="15">
+                        </div>
+
+                        <script>
+                            document.addEventListener("DOMContentLoaded", function () {
+                                const cpfInput = document.getElementById("id_cpf");
+                                const telefoneInput = document.getElementById("id_telefone");
+
+                                // Formatação CPF: xxx.xxx.xxx-xx
+                                cpfInput.addEventListener("input", function (e) {
+                                    let value = cpfInput.value.replace(/\D/g, ''); // remove tudo que não é número
+                                    if (value.length > 11) value = value.slice(0, 11);
+                                    value = value.replace(/(\d{3})(\d)/, "$1.$2");
+                                    value = value.replace(/(\d{3})(\d)/, "$1.$2");
+                                    value = value.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+                                    cpfInput.value = value;
+                                });
+
+                                // Formatação Telefone: (DDD) 9xxxx-xxxx
+                                telefoneInput.addEventListener("input", function (e) {
+                                    let value = telefoneInput.value.replace(/\D/g, ''); // remove tudo que não é número
+                                    if (value.length > 11) value = value.slice(0, 11);
+
+                                    if (value.length <= 10) {
+                                        // formato antigo: (xx) xxxx-xxxx
+                                        value = value.replace(/(\d{2})(\d)/, "($1) $2");
+                                        value = value.replace(/(\d{4})(\d)/, "$1-$2");
+                                    } else {
+                                        // formato novo: (xx) 9xxxx-xxxx
+                                        value = value.replace(/(\d{2})(\d)/, "($1) $2");
+                                        value = value.replace(/(\d{5})(\d)/, "$1-$2");
+                                    }
+                                    telefoneInput.value = value;
+                                });
+                            });
+                        </script>
+
+                </div>
+
+                <!-- Campo: E-mail -->
+                <label for="id_email">E-mail:</label>
+                <input type="email" name="email" id="id_email" required placeholder="email@exemplo.com">
+
+                <!-- Campo: Senha -->
+                <label for="id_password">Senha:</label>
+                <input type="password" name="password" id="id_password" required placeholder="Crie uma senha com no mínimo 8 digítos">
+                
+                <!-- Botão de envio -->
+                 <div class="botoes">
+                    <a href="javascript:history.back()">Cancelar</a>
+                    <button type="submit">Criar Conta</button>
+                 </div>
+            </form>
+
+        </div>
+    </main>
+</body>
+</html>

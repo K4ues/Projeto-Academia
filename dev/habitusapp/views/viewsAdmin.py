@@ -1,36 +1,37 @@
-from django.shortcuts import render, redirect, get_object_or_404
-from habitusapp.forms import AlunoForm, ProfessorForm, ProfessorEditForm
-from django.contrib.auth import authenticate, login as auth_login
-from django.contrib.auth.models import User
-from django.contrib.auth import authenticate, login as auth_login
-from django.contrib.auth.models import User, Group
-from django.contrib.auth.decorators import login_required
-from django.views.decorators.http import require_POST
-from habitusapp.models import Admin
-from django.contrib import messages
-from django.conf import settings
 import os
-from habitusapp.models import Noticia, Admin, Professor, Exercicio, Aluno
-from habitusapp.forms import NoticiaForm, ExercicioForm
-from django.db.models import Q
 
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import Group
+from django.db.models import Q
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.csrf import csrf_protect
-from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
+
+from habitusapp.forms import (
+    ExercicioForm,
+    ProfessorEditForm,
+    ProfessorForm,
+)
+from habitusapp.models import (
+    Aluno,
+    Exercicio,
+    Professor,
+)
 
 
 @login_required
 def professores(request):
-    busca = request.GET.get('busca', '')
+    busca = request.GET.get('busca', '').strip()
 
     grupo_professor = Group.objects.get(name='Professor')
-    
-    # Inicialmente não mostra nenhum professor, só mostra quando há busca
+
     if busca:
         usuarios_professores = grupo_professor.user_set.filter(
             Q(professor__nome__icontains=busca) | Q(professor__matricula__icontains=busca)
         ).order_by('professor__nome')
     else:
-        # Retorna queryset vazio quando não há busca
         usuarios_professores = grupo_professor.user_set.none()
 
     context = {
@@ -67,23 +68,22 @@ def professor(request, pk):
 @require_POST
 def atualizar_foto_professor(request, pk):
     professor = get_object_or_404(Professor, pk=pk)
-    
+
     if 'foto' in request.FILES:
-        # Remove a foto antiga se existir
         if professor.foto_perfil:
             professor.foto_perfil.delete(save=False)
-        
+
         professor.foto_perfil = request.FILES['foto']
         professor.save()
         return JsonResponse({
             'success': True,
             'message': 'Foto atualizada com sucesso!',
-            'foto_url': professor.foto_perfil.url
+            'foto_url': professor.foto_perfil.url,
         })
-    
+
     return JsonResponse({
         'success': False,
-        'message': 'Nenhuma foto foi selecionada.'
+        'message': 'Nenhuma foto foi selecionada.',
     }, status=400)
 
 @csrf_protect
@@ -118,7 +118,6 @@ def exercicios(request):
     busca = request.GET.get('busca', '')
     grupo_muscular = request.GET.get('grupo_muscular', '')
     
-    # Verifica se há algum critério de pesquisa
     has_search_criteria = bool(busca.strip() or grupo_muscular)
     
     if has_search_criteria:
@@ -131,7 +130,6 @@ def exercicios(request):
         if grupo_muscular:
             exercicios = exercicios.filter(grupo_muscular=grupo_muscular)
     else:
-        # Se não há critério de pesquisa, retorna queryset vazio
         exercicios = Exercicio.objects.none()
 
     context = {
@@ -169,7 +167,7 @@ def excluir_exercicio(request, exercicio_id):
 @login_required
 def editar_exercicio(request, exercicio_id):
     exercicio = get_object_or_404(Exercicio, id=exercicio_id)
-    
+
     if request.method == 'POST':
         form = ExercicioForm(request.POST, request.FILES, instance=exercicio)
         if form.is_valid():
@@ -180,16 +178,12 @@ def editar_exercicio(request, exercicio_id):
             messages.error(request, 'Por favor, corrija os erros abaixo.')
     else:
         form = ExercicioForm(instance=exercicio)
-    
+
     return render(request, 'PagsAdmin/editar_exercicio.html', {
-        'form': form, 
-        'exercicio': exercicio
+        'form': form,
+        'exercicio': exercicio,
     })
 
-from django.contrib import messages
-from django.shortcuts import get_object_or_404, redirect
-from django.contrib.auth.decorators import login_required, user_passes_test
-from django.views.decorators.http import require_POST
 
 def is_admin(user):
     return user.groups.filter(name='Admin').exists()
@@ -197,27 +191,22 @@ def is_admin(user):
 @login_required
 @require_POST
 def inativar_reativar_professor(request, pk):
-    # Verifica se o usuário é admin
     if not is_admin(request.user):
         messages.error(request, 'Você não tem permissão para realizar esta ação.')
         return redirect('feed')
     
     professor = get_object_or_404(Professor, pk=pk)
     
-    # Impede que um admin inative/reative a si mesmo
     if professor.user == request.user:
         messages.error(request, 'Você não pode modificar o status da sua própria conta.')
         return redirect('professores')
     
-    # Alterna o status do usuário
     user = professor.user
     if user.is_active:
-        # Se está ativo, inativa
         user.is_active = False
         user.save()
         messages.success(request, f'Conta do professor {professor.nome} inativada com sucesso!')
     else:
-        # Se está inativo, reativa
         user.is_active = True
         user.save()
         messages.success(request, f'Conta do professor {professor.nome} reativada com sucesso!')
@@ -227,27 +216,22 @@ def inativar_reativar_professor(request, pk):
 @login_required
 @require_POST
 def inativar_reativar_aluno(request, pk):
-    # Verifica se o usuário é admin
     if not is_admin(request.user):
         messages.error(request, 'Você não tem permissão para realizar esta ação.')
         return redirect('gerenciar_alunos')
     
     aluno = get_object_or_404(Aluno, pk=pk)
     
-    # Impede que um admin inative/reative a si mesmo (se for aluno também)
     if aluno.user == request.user:
         messages.error(request, 'Você não pode modificar o status da sua própria conta.')
         return redirect('ver_aluno', aluno_id=pk)
     
-    # Alterna o status do usuário
     user = aluno.user
     if user.is_active:
-        # Se está ativo, inativa
         user.is_active = False
         user.save()
         messages.success(request, f'Conta do aluno {aluno.nome} inativada com sucesso!')
     else:
-        # Se está inativo, reativa
         user.is_active = True
         user.save()
         messages.success(request, f'Conta do aluno {aluno.nome} reativada com sucesso!')

@@ -7,29 +7,20 @@ import os
 from pathlib import Path
 import dj_database_url
 
-# Diretório base do projeto
 BASE_DIR = Path(__file__).resolve().parent.parent
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
-# Pasta onde serão coletados os arquivos estáticos para produção
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-
-
-# Armazenamento de arquivos estáticos com WhiteNoise
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 FILE_UPLOAD_HANDLERS = [
     "django.core.files.uploadhandler.TemporaryFileUploadHandler",
 ]
 
-
-# Segurança
 SECRET_KEY = 'django-insecure-d&fj#(my1kmiq5l@x10gmtm50hj^5qqc$-m_!o)%&tr*tmslb1'
 
-# ATENÇÃO: Em produção, deixe DEBUG = False
 DEBUG = False
 
-# Domínios permitidos
 ALLOWED_HOSTS = ['localhost','127.0.0.1','habitus-2025.onrender.com','habitus-cnat.vercel.app',]
 
 
@@ -42,17 +33,16 @@ CSRF_TRUSTED_ORIGINS = [
     'https://habitus-cnat.vercel.app'
 ]
 
-# Configurações de CSRF e Sessão
-CSRF_COOKIE_SECURE = False  # True apenas em produção com HTTPS
-CSRF_COOKIE_HTTPONLY = False  # Permite JavaScript acessar o cookie se necessário
-CSRF_COOKIE_SAMESITE = 'Lax'  # Permite cookies em requisições do mesmo site
-CSRF_COOKIE_DOMAIN = None  # Não restringir domínio
-SESSION_COOKIE_SECURE = False  # True apenas em produção com HTTPS
+CSRF_COOKIE_SECURE = False 
+CSRF_COOKIE_HTTPONLY = False 
+CSRF_COOKIE_SAMESITE = 'Lax' 
+CSRF_COOKIE_DOMAIN = None  
+SESSION_COOKIE_SECURE = False
 SESSION_COOKIE_SAMESITE = 'Lax'
-CSRF_USE_SESSIONS = False  # Usa cookies em vez de sessões para CSRF token
-CSRF_FAILURE_VIEW = 'django.views.csrf.csrf_failure'  # View padrão de erro CSRF
+CSRF_USE_SESSIONS = False 
+CSRF_FAILURE_VIEW = 'django.views.csrf.csrf_failure'
 
-# Aplicativos instalados
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -63,23 +53,20 @@ INSTALLED_APPS = [
     'habitusapp'
 ]
 
-# Middleware
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',  # ← posição correta
+    'whitenoise.middleware.WhiteNoiseMiddleware',  
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'django.middleware.locale.LocaleMiddleware',  # precisa estar DEPOIS do SessionMiddleware
-
+    'django.middleware.locale.LocaleMiddleware', 
 ]
 
 ROOT_URLCONF = 'devadmin.urls'
 
-# Templates
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -96,16 +83,13 @@ TEMPLATES = [
     },
 ]
 
-# WSGI/ASGI
 WSGI_APPLICATION = 'devadmin.wsgi.application'
 ASGI_APPLICATION = 'devadmin.asgi.application'
 
-# Banco de dados (usando variável DATABASE_URL ou SQLite como fallback)
 DATABASES = {
     'default': dj_database_url.config(default='sqlite:///db.sqlite3', conn_max_age=600)
 }
 
-# Validação de senha
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -133,13 +117,11 @@ LOGIN_URL = '/'
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-# Internacionalização
 LANGUAGE_CODE = 'pt-br'
 TIME_ZONE = 'America/Sao_Paulo'
 USE_I18N = True
 USE_TZ = True
 
-# Tipo padrão para campos de chave primária
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 

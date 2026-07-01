@@ -1,7 +1,7 @@
 from django.db import models
 from django.conf import settings
 from django.utils import timezone
-from habitusapp.models import Professor  # importa Professor do app certo
+from habitusapp.models import Professor
 
 class SolicitacaoDeTreino(models.Model):
     STATUS_CHOICES = [

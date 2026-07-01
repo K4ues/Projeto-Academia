@@ -1,8 +1,7 @@
 from django.db import models
 from datetime import date, datetime
 from django.contrib.auth.models import User
-from django.contrib.postgres.fields import ArrayField  # se estiver usando PostgreSQL
-
+from django.contrib.postgres.fields import ArrayField
 
 class Progresso(models.Model):
     class NivelChoices(models.TextChoices):
@@ -32,9 +31,8 @@ class Progresso(models.Model):
     progresso_valor = models.IntegerField(default=0)
     concluidos = models.IntegerField(default=0)
     dias_treinados = models.JSONField(default=list, blank=True)
-    ultimo_treino_id = models.IntegerField(blank=True, null=True)  # Novo campo para ciclo de treinos
+    ultimo_treino_id = models.IntegerField(blank=True, null=True)  
 
-    #Medição das cincunfêrencias
     cintura = models.FloatField(blank=True, null=True)
     abdomen = models.FloatField(blank=True, null=True)
     torax = models.FloatField(blank=True, null=True)
@@ -46,7 +44,6 @@ class Progresso(models.Model):
     braco_direito = models.FloatField(blank=True, null=True)
     braco_esquerdo = models.FloatField(blank=True, null=True)
 
-    #Medições das dobras cutâneas
     tricipital = models.FloatField(blank=True, null=True)
     subescapular = models.FloatField(blank=True, null=True)
     axilar_media = models.FloatField(blank=True, null=True)

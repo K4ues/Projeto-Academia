@@ -1,5 +1,5 @@
-from django.contrib.auth.models import User
 from django.db import models
+from django.contrib.auth.models import User
 from habitusapp.models import Treino, Exercicio
 
 class TreinoExercicio(models.Model):

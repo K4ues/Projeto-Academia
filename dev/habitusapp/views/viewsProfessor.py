@@ -1,16 +1,53 @@
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required
-from django.contrib import messages
-from django.db import models
-from django.utils import timezone
-from django.http import JsonResponse
-from habitusapp.models import Professor, Admin, Noticia, Aluno, Treino, Progresso, TreinoExercicio
-from habitusapp.forms import AlunoForm, NoticiaForm, ProgressoForm, AlunoEditForm, TreinoFormEdit, TreinoExercicioFormSet
-import datetime
 import os
 
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.db.models import Q
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404, redirect, render
+from django.utils import timezone
 from django.views.decorators.csrf import csrf_protect
-from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
+
+from habitusapp.forms import (
+    AlunoEditForm,
+    AlunoForm,
+    NoticiaForm,
+    ProgressoForm,
+    TreinoExercicioFormSet,
+)
+from habitusapp.models import (
+    Admin,
+    Aluno,
+    Exercicio,
+    Notificacao,
+    Professor,
+    Progresso,
+    Treino,
+    TreinoExercicio,
+    Noticia,
+)
+
+
+def get_author_info(user):
+    admin = Admin.objects.filter(user=user).first()
+    if admin:
+        return admin.nome, admin.tipo_trabalho
+
+    professor = Professor.objects.filter(user=user).first()
+    if professor:
+        return professor.nome, professor.tipo_trabalho
+
+    return None, None
+
+
+def get_treino_progress(usuario):
+    progresso = Progresso.objects.filter(usuario=usuario).first()
+    return progresso.concluidos if progresso else 0
+
+
+def user_is_professor(user):
+    return user.groups.filter(name='Professor').exists()
 
 @login_required
 def gerenciar_noticias(request):
@@ -102,17 +139,10 @@ def excluir_noticia(request, noticia_id):
     
     return redirect('gerenciar_noticias')
 
-from django.db.models import Q
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import render
-from habitusapp.models import Aluno, Treino, Progresso
-
 @login_required
 def gerenciar_alunos(request):
     busca = request.GET.get('busca', '').strip()
-
-    # Verifica se o usuário digitou algo
-    has_search_criteria = bool(busca)  # True se houver texto
+    has_search_criteria = bool(busca)
 
     if has_search_criteria:
         alunos = Aluno.objects.filter(
@@ -120,10 +150,7 @@ def gerenciar_alunos(request):
             Q(matricula__icontains=busca)
         ).order_by('nome')
     else:
-        # Nenhum critério: retorna vazio até o usuário pesquisar
         alunos = Aluno.objects.none()
-
-    # Adiciona informações extras somente se houver resultados
     for aluno in alunos:
         total_treinos = Treino.objects.filter(usuario=aluno.user).count()
         progresso_obj = Progresso.objects.filter(usuario=aluno.user).first()
@@ -146,7 +173,6 @@ def gerenciar_treinos(request, aluno_id):
     aluno = get_object_or_404(Aluno, id=aluno_id)
     treinos_usuario = Treino.objects.filter(usuario=aluno.user, arquivado=False)
 
-    # Progresso do aluno
     progresso_obj = Progresso.objects.filter(usuario=aluno.user).first()
     concluidos = progresso_obj.concluidos if progresso_obj else 0
     total_treinos = treinos_usuario.count()
@@ -198,13 +224,10 @@ def ver_aluno(request, aluno_id):
         messages.error(request, 'Aluno não encontrado.')
         return redirect('gerenciar_alunos')
     
-    # Obter o progresso MAIS RECENTE do aluno (usando first() em vez de get())
     progresso = Progresso.objects.filter(usuario=aluno.user).order_by('-data_entrada').first()
     
-    # Obter treinos do aluno
     treinos = aluno.user.treino_set.all() if hasattr(aluno.user, 'treino_set') else []
     
-    # Calcular IMC se tiver peso e altura no progresso
     imc = None
     if progresso and progresso.peso and progresso.altura:
         try:
@@ -224,10 +247,6 @@ def ver_aluno(request, aluno_id):
     return render(request, 'PagsProfessor/ver_aluno.html', context)
 
 
-from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.csrf import csrf_protect
-from django.views.decorators.http import require_POST
-
 @csrf_protect
 @login_required
 @require_POST
@@ -235,7 +254,6 @@ def atualizar_foto_aluno(request, pk):
     aluno = get_object_or_404(Aluno, pk=pk)
     
     if 'foto' in request.FILES:
-        # Remove a foto antiga se existir
         if aluno.foto_perfil:
             aluno.foto_perfil.delete(save=False)
         
@@ -268,17 +286,14 @@ def editar_aluno(request, pk):
     if request.method == 'POST':
         aluno_form = AlunoEditForm(request.POST, request.FILES, instance=aluno)
         
-        # Inicializa progresso_form apenas se progresso existe
         if progresso_existe:
             progresso_form = ProgressoForm(request.POST, instance=progresso)
         else:
             progresso_form = None
 
         if aluno_form.is_valid():
-            # Salva o aluno
             aluno = aluno_form.save()
             
-            # Salva o progresso se existir
             if progresso_existe and progresso_form:
                 if progresso_form.is_valid():
                     progresso = progresso_form.save(commit=False)
@@ -286,14 +301,12 @@ def editar_aluno(request, pk):
                     progresso.save()
                     print("Progresso salvo com validação")
                 else:
-                    # Se não for válido, tenta salvar manualmente
                     print("Progresso form inválido, salvando manualmente")
                     try:
-                        # Atualiza os campos manualmente
                         for field in progresso_form.fields:
                             if field in request.POST:
                                 value = request.POST.get(field)
-                                if value:  # Só atualiza se não estiver vazio
+                                if value:  
                                     setattr(progresso, field, value)
                         
                         progresso.usuario = aluno.user
@@ -305,13 +318,11 @@ def editar_aluno(request, pk):
             messages.success(request, 'Aluno atualizado com sucesso!')
             return redirect('ver_aluno', aluno_id=aluno.pk)
         else:
-            # Mostra erros do aluno_form
             for field, errors in aluno_form.errors.items():
                 for error in errors:
                     messages.error(request, f"Erro no campo {field}: {error}")
     else:
         aluno_form = AlunoEditForm(instance=aluno)
-        # Inicializa progresso_form apenas se progresso existe
         if progresso_existe:
             progresso_form = ProgressoForm(instance=progresso)
         else:
@@ -336,7 +347,6 @@ def adicionar_treino(request, aluno_id):
         data_inicio = request.POST.get('data_inicio')
         data_fim = request.POST.get('data_fim')
         
-        # Pega os dados dos exercícios
         exercicios_ids = request.POST.getlist('exercicios')
         series_list = request.POST.getlist('series')
         repeticoes_list = request.POST.getlist('repeticoes')
@@ -348,7 +358,6 @@ def adicionar_treino(request, aluno_id):
             return render(request, 'PagsProfessor/adicionar_treino.html', {'aluno': aluno})
         
         try:
-            # Cria o treino
             treino = Treino.objects.create(
                 usuario=aluno.user,
                 nome=nome,
@@ -356,10 +365,7 @@ def adicionar_treino(request, aluno_id):
                 data_inicio=data_inicio,
                 data_fim=data_fim
             )
-            
-            # Adiciona os exercícios ao treino
-            from habitusapp.models import Exercicio, TreinoExercicio
-            
+
             for i, exercicio_id in enumerate(exercicios_ids):
                 exercicio = Exercicio.objects.get(id=exercicio_id)
                 
@@ -371,9 +377,7 @@ def adicionar_treino(request, aluno_id):
                     carga=cargas_list[i] if i < len(cargas_list) else "0",
                     observacao=observacoes_list[i] if i < len(observacoes_list) else ""
                 )
-            
-            # Cria notificação para o aluno
-            from habitusapp.models import Notificacao
+
             Notificacao.objects.create(
                 usuario=aluno.user,
                 conteudo=f'Novo treino "{nome}" foi adicionado ao seu plano.',
@@ -395,7 +399,6 @@ def excluir_treino_professor(request, treino_id, aluno_id):
     treino = get_object_or_404(Treino, id=treino_id)
     aluno = get_object_or_404(Aluno, id=aluno_id)
     
-    # Verifica se o treino pertence ao aluno especificado
     if treino.usuario != aluno.user:
         messages.error(request, 'Treino não encontrado para este aluno.')
         return redirect('gerenciar_treinos', aluno_id=aluno_id)
@@ -406,7 +409,6 @@ def excluir_treino_professor(request, treino_id, aluno_id):
         messages.success(request, f'Treino "{nome_treino}" excluído com sucesso!')
         return redirect('gerenciar_treinos', aluno_id=aluno_id)
 
-    # Se não for POST, redireciona de volta sem apagar
     return redirect('gerenciar_treinos', aluno_id=aluno_id)
 
 @csrf_protect
@@ -416,13 +418,11 @@ def editar_treino_professor(request, aluno_id, treino_id):
     treino = get_object_or_404(Treino, id=treino_id, usuario=aluno.user)
     
     if request.method == 'POST':
-        # Processa dados básicos do treino
         nome = request.POST.get('nome')
         nivel = request.POST.get('nivel')
         data_inicio = request.POST.get('data_inicio')
         data_fim = request.POST.get('data_fim')
         
-        # Pega os dados dos exercícios novos
         exercicios_ids = request.POST.getlist('exercicios')
         series_list = request.POST.getlist('series')
         repeticoes_list = request.POST.getlist('repeticoes')
@@ -430,23 +430,17 @@ def editar_treino_professor(request, aluno_id, treino_id):
         observacoes_list = request.POST.getlist('observacoes')
         
         try:
-            # Atualiza os dados básicos do treino
             treino.nome = nome
             treino.nivel = nivel
             treino.data_inicio = data_inicio
             treino.data_fim = data_fim
             treino.save()
             
-            # Processa formset dos exercícios existentes
             formset = TreinoExercicioFormSet(request.POST, instance=treino)
-            
             if formset.is_valid():
                 formset.save()
             
-            # Adiciona novos exercícios se houver
             if exercicios_ids:
-                from habitusapp.models.Exercicio import Exercicio
-                
                 for i, exercicio_id in enumerate(exercicios_ids):
                     if i < len(series_list) and i < len(repeticoes_list) and i < len(cargas_list):
                         exercicio = get_object_or_404(Exercicio, id=exercicio_id)
@@ -462,11 +456,9 @@ def editar_treino_professor(request, aluno_id, treino_id):
             
             messages.success(request, f'Treino "{treino.nome}" atualizado com sucesso!')
             return redirect('gerenciar_treinos', aluno_id=aluno_id)
-            
         except Exception as e:
             messages.error(request, f'Erro ao atualizar treino: {str(e)}')
     
-    # GET request - exibe formulário
     formset = TreinoExercicioFormSet(instance=treino)
     
     return render(request, 'PagsProfessor/editar_treino.html', {
@@ -476,29 +468,27 @@ def editar_treino_professor(request, aluno_id, treino_id):
     })
 
 
-from django.shortcuts import redirect, get_object_or_404
-from django.contrib import messages
-from habitusapp.models import Treino, Aluno
-from django.contrib.auth.models import User
-
+@csrf_protect
+@login_required
 def arquivar_treino(request, aluno_id, treino_id):
-    aluno = get_object_or_404(Aluno, id=aluno_id)  # Buscar o aluno certo
-    treino = get_object_or_404(Treino, id=treino_id, usuario=aluno.user)  # Filtra corretamente pelo usuário do aluno
+    aluno = get_object_or_404(Aluno, id=aluno_id)
+    treino = get_object_or_404(Treino, id=treino_id, usuario=aluno.user) 
 
     if request.user.groups.first().name != "Professor":
         messages.error(request, "Você não tem permissão para arquivar treinos.")
         return redirect('gerenciar_treinos', aluno_id=aluno_id)
 
     treino.arquivado = True
-    from habitusapp.models import Notificacao
+    treino.save()
+
     Notificacao.objects.create(
         usuario=aluno.user,
         conteudo=f'Seu treino "{treino.nome}" foi arquivado pelo professor {request.user.first_name or request.user.username}.',
         data=timezone.now(),
-        lida=False
+        lida=False,
     )
-    treino.save()
-    messages.success(request, f"O treino '{treino.nome}' foi arquivado com sucesso!")
+
+    messages.success(request, f'O treino "{treino.nome}" foi arquivado com sucesso!')
     return redirect('gerenciar_treinos', aluno_id=aluno_id)
 
     
@@ -511,13 +501,10 @@ def progresso_aluno(request, aluno_id):
         messages.error(request, 'Aluno não encontrado.')
         return redirect('gerenciar_alunos')
     
-    # Busca todos os progressos do aluno ordenados por data (mais recente primeiro)
     progressos = Progresso.objects.filter(usuario=aluno.user).order_by('-data_entrada')
     
-    # Progresso mais recente (para mostrar por padrão)
     progresso_recente = progressos.first() if progressos else None
     
-    # Filtro por data
     data_selecionada = request.GET.get('data')
     progresso_filtrado = None
     
@@ -527,13 +514,10 @@ def progresso_aluno(request, aluno_id):
         except:
             progresso_filtrado = None
     
-    # Progresso a ser exibido (filtrado ou mais recente)
     progresso_exibicao = progresso_filtrado if progresso_filtrado else progresso_recente
     
-    # Lista de datas disponíveis para o filtro
     datas_disponiveis = progressos.values_list('data_entrada', flat=True).distinct()
     
-    # Formulário para novo progresso
     if request.method == 'POST':
         form = ProgressoForm(request.POST)
         if form.is_valid():
@@ -568,8 +552,6 @@ def adicionar_progresso(request, aluno_id):
         if form.is_valid():
             novo_progresso = form.save(commit=False)
             novo_progresso.usuario = aluno.user
-            # A data será automaticamente definida pelo default=date.today() do modelo
-            # Ou explicitamente: novo_progresso.data_entrada = date.today()
             novo_progresso.save()
             messages.success(request, 'Progresso adicionado com sucesso!')
             return redirect('progresso_aluno', aluno_id=aluno_id)
